@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('kegiatan_relaksasi', function (Blueprint $table) {
-            $table->id('idKegiatan');
+            $table->string('idKegiatan',12)->primary();
             $table->string('namaKegiatan', 45);
             $table->string('manfaat', 50);
             $table->text('deskripsi');
             $table->time('durasi');
-            $table->enum('kategori',['kategori a', 'kategori b']);
+            $table->enum('kategori',['Meditation', 'Focus', 'Move', 'Sleep', 'Refresh']);
             $table->json('tahapan');
             $table->binary('photo');
             $table->timestamp('waktuSelesai');
@@ -26,6 +26,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('kegiatan_relaksasis');
+        Schema::dropIfExists('kegiatan_relaksasi');
     }
 };
