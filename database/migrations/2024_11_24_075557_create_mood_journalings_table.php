@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mood_journalings', function (Blueprint $table) {
-            $table->id('idJournaling', 15);
-            $table->foreignId('idUser', 12);
-            $table->timestamps('tglInput');
+        Schema::create('mood_journaling', function (Blueprint $table) {
+            $table->string('idJournaling', 15)->primary();
+            $table->string('idUser', 12);
+            $table->timestamp('tglInput');
             $table->tinyInteger('mood');
             $table->json('perasaan');
             $table->json('kondisiBayi');
             $table->text('textJurnal');
+
+            $table->foreign('idUser')->references('idUser')->on('users');
         });
     }
 

@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pesans', function (Blueprint $table) {
+        Schema::create('pesan', function (Blueprint $table) {
             $table->id('idPesan');
-            $table->foreignId('idSesi');
+            $table->string('idSesi', 15);
             $table->enum('pengirim', ['user','chatBot']);
             $table->text('pesan');
-            $table->timestamps('waktuKirim');
+            $table->timestamp('waktuKirim');
+
+            $table->foreign('idSesi')->references('idSesi')->on('sesi_chat');
         });
     }
 

@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('photo_galleries', function (Blueprint $table) {
+        Schema::create('photo_gallery', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('idJournaling', 15);
+            $table->string('idJournaling', 15);
             $table->binary('photo');
             $table->timestamps();
+
+            $table->foreign('idJournaling')->references('idJournaling')->on('mood_journaling');
         });
     }
 

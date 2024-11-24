@@ -11,12 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jawaban_assesses', function (Blueprint $table) {
-            $table->id('idJawab');
-            $table->foreignId('idSesiAssess');
-            $table->foreignId('idPertanyaan');
+        Schema::create('jawaban_assess', function (Blueprint $table) {
+            $table->string('idJawab',15)->primary();
+            $table->string('idSesiAssess');
+            $table->tinyInteger('idPertanyaan');
             $table->tinyInteger('jawaban');
             $table->timestamps();
+
+            $table->foreign('idSesiAssess')->references('idSesiAssess')->on('sesi_assessment');
+            $table->foreign('idPertanyaan')->references('idPertanyaan')->on('pertanyaan_assess');
         });
     }
 
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jawaban_assesses');
+        Schema::dropIfExists('jawaban_assess');
     }
 };

@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kegiatan_users', function (Blueprint $table) {
-            $table->id('idKegiatan', 12);
-            $table->foreignId('idUser', 12);
-            $table->timestamps('waktuSelesai');
+        Schema::create('kegiatan_user', function (Blueprint $table) {
+            $table->id();
+            $table->string('idKegiatan', 12);
+            $table->string('idUser', 12);
+            $table->timestamp('waktuSelesai');
+
+            $table->foreign('idUser')->references('idUser')->on('users');
+            $table->foreign('idKegiatan')->references('idKegiatan')->on('kegiatan_relaksasi');
         });
     }
 

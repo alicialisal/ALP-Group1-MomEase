@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sesi_chats', function (Blueprint $table) {
-            $table->id('idSesi', 15);
-            $table->foreignId('idUser', 12);
-            $table->timestamps('waktuMulai');
-            $table->timestamp('waktuSelesai');
+        Schema::create('sesi_chat', function (Blueprint $table) {
+            $table->string('idSesi',15)->primary();
+            $table->string('idUser', 12);
+            $table->timestamp('waktuMulai');
+            $table->timestamp('waktuSelesai')->nullable()->default(null);
             $table->tinyInteger('isActive');
+
+            $table->foreign('idUser')->references('idUser')->on('users');
         });
     }
 

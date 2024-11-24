@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sesi_assessments', function (Blueprint $table) {
-            $table->id('idSesiAssess', 15);
-            $table->foreign('userId', 12);
+        Schema::create('sesi_assessment', function (Blueprint $table) {
+            $table->string('idSesiAssess', 15)->primary();
+            $table->string('idUser', 12);
             $table->tinyInteger('skorTotal');
-            $table->timestamps('waktuTes');
+            $table->timestamp('waktuTes');
+
+            $table->foreign('idUser')->references('idUser')->on('users');
         });
     }
 

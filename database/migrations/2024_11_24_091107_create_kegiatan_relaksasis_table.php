@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kegiatan_relaksasis', function (Blueprint $table) {
+        Schema::create('kegiatan_relaksasi', function (Blueprint $table) {
             $table->id('idKegiatan');
             $table->string('namaKegiatan', 45);
             $table->string('manfaat', 50);
@@ -20,7 +20,7 @@ return new class extends Migration
             $table->enum('kategori',['kategori a', 'kategori b']);
             $table->json('tahapan');
             $table->binary('photo');
-            $table->timestamps('waktuSelesai');
+            $table->timestamp('waktuSelesai');
         });
     }
 

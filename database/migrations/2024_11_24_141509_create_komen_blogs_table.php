@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('like_blog', function (Blueprint $table) {
-            $table->string('idBlog', 15)->primary();
-            $table->string('idUser', 12)->primary();
-            $table->boolean('isLike');
+        Schema::create('komen_blog', function (Blueprint $table) {
+            $table->id();
+            $table->string('idUser', 12);
+            $table->string('idBlog', 15);
+            $table->text('komentar');
             $table->timestamps();
 
             $table->foreign('idUser')->references('idUser')->on('users');
@@ -22,8 +23,11 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('blogs');
+        Schema::dropIfExists('komen_blogs');
     }
 };

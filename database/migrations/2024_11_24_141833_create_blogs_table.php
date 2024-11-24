@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('like_blog', function (Blueprint $table) {
-            $table->string('idBlog', 15)->primary();
-            $table->string('idUser', 12)->primary();
-            $table->boolean('isLike');
+        Schema::create('blogs', function (Blueprint $table) {
+            $table->string('idBlog',15)->primary();
+            $table->text('isiBlog');
+            $table->binary('gambar');
             $table->timestamps();
-
-            $table->foreign('idUser')->references('idUser')->on('users');
-            $table->foreign('idBlog')->references('idBlog')->on('blogs');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('blogs');
