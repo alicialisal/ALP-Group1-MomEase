@@ -48,4 +48,24 @@ class User extends Authenticatable
             'passUsr' => 'hashed',
         ];
     }
+
+    public function kegiatanUsers()
+    {
+        return $this->hasMany(kegiatanUser::class, 'idUser');
+    }
+
+    public function moodJournalings()
+    {
+        return $this->hasMany(moodJournaling::class, 'idUser');
+    }
+
+    public function sesiAssessments()
+    {
+        return $this->hasMany(sesiAssessment::class, 'idUser');
+    }
+    
+    public function sesiChat()
+    {
+        return $this->hasMany(sesiChat::class, 'idUser');
+    }
 }

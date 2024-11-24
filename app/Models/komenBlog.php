@@ -13,4 +13,14 @@ class komenBlog extends Model
         'idUser',
         'komentar',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'idUser');
+    }
+
+    public function blog()
+    {
+        return $this->belongsTo(blog::class, 'idBlog');
+    }
 }

@@ -13,4 +13,13 @@ class likeBlog extends Model
         'idUser',
         'isLike',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'idUser');
+    }
+    public function blog()
+    {
+        return $this->belongsTo(blog::class, 'idBlog');
+    }
 }

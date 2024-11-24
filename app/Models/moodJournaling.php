@@ -18,4 +18,9 @@ class moodJournaling extends Model
         'kondisiBayi',
         'textJournal',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'idUser');
+    }
 }

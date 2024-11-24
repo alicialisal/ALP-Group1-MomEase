@@ -15,4 +15,8 @@ class kegiatanUser extends Model
         'waktuSelesai',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'idUser');
+    }
 }

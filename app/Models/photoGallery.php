@@ -13,4 +13,9 @@ class photoGallery extends Model
         'idJournaling',
         'photo',
     ];
+
+    public function journaling()
+    {
+        return $this->belongsTo(MoodJournaling::class, 'idJournaling');
+    }
 }

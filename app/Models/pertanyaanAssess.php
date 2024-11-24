@@ -14,4 +14,9 @@ class pertanyaanAssess extends Model
         'pertanyaan',
         'bobot',
     ];
+
+    public function jawabanAssess()
+    {
+        return $this->hasMany(jawabanAssess::class, 'idPertanyaan', 'idPertanyaan');
+    }
 }

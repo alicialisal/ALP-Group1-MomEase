@@ -15,4 +15,9 @@ class jawabanAssess extends Model
         'idPertanyaan',
         'jawaban',
     ];
+
+    public function sesiAssess()
+    {
+        return $this->belongsTo(sesiAssessment::class, 'idSesiAsses');
+    }
 }

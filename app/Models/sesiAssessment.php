@@ -15,4 +15,14 @@ class sesiAssessment extends Model
         'skorTotal',
         'waktuTes',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'idUser');
+    }
+
+    public function jawabanAssess()
+    {
+        return $this->hasMany(jawabanAssess::class, 'idSesiAssess', 'idSesiAssess');
+    }
 }

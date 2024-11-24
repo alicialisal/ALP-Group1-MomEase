@@ -16,4 +16,9 @@ class pesan extends Model
         'pesan',
         'waktuKirim',
     ];
+
+    public function sesiChat()
+    {
+        return $this->belongsTo(sesiChat::class, 'idSesi', 'idSesi');
+    }
 }

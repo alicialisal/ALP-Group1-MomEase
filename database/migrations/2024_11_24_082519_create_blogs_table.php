@@ -12,10 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('like_blog', function (Blueprint $table) {
-            $table->string('idBlog', 15)->primary();
-            $table->string('idUser', 12)->primary();
+            $table->string('idBlog', 15);
+            $table->string('idUser', 12);
             $table->boolean('isLike');
             $table->timestamps();
+
+            $table->primary(['idBlog', 'idUser']);
 
             $table->foreign('idUser')->references('idUser')->on('users');
             $table->foreign('idBlog')->references('idBlog')->on('blogs');
