@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('like_blog', function (Blueprint $table) {
             $table->string('idBlog', 15);
-            $table->string('idUser', 12);
+            $table->unsignedBigInteger('idUser');
             $table->boolean('isLike');
             $table->timestamps();
 

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('mood_journaling', function (Blueprint $table) {
             $table->string('idJournaling', 15)->primary();
-            $table->string('idUser', 12);
+            $table->unsignedBigInteger('idUser');
             $table->timestamp('tglInput');
             $table->tinyInteger('mood');
             $table->json('perasaan');

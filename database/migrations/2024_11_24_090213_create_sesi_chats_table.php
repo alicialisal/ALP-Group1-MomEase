@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('sesi_chat', function (Blueprint $table) {
             $table->string('idSesi',15)->primary();
-            $table->string('idUser', 12);
+            $table->unsignedBigInteger('idUser');
             $table->timestamp('waktuMulai');
             $table->timestamp('waktuSelesai')->nullable()->default(null);
             $table->tinyInteger('isActive');

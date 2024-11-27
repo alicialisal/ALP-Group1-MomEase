@@ -9,6 +9,9 @@ class moodJournaling extends Model
 {
     use HasFactory;
 
+    protected $table = 'mood_journaling';
+    protected $primaryKey = 'idJournaling';
+    protected $keyType = 'string';
     protected $fillable = [
         'idJournaling',
         'idUser',
@@ -16,8 +19,11 @@ class moodJournaling extends Model
         'mood',
         'perasaan',
         'kondisiBayi',
-        'textJournal',
+        'textJurnal',
     ];
+
+    public $timestamps = false;
+    public $updated_at = false;
 
     public function user()
     {

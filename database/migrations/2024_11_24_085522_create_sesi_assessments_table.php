@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('sesi_assessment', function (Blueprint $table) {
             $table->string('idSesiAssess', 15)->primary();
-            $table->string('idUser', 12);
+            $table->unsignedBigInteger('idUser');
             $table->tinyInteger('skorTotal');
             $table->timestamp('waktuTes');
 

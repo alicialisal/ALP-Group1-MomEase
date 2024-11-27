@@ -12,6 +12,9 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasApiTokens;
+    protected $primaryKey = 'idUser';
+    // protected $keyType = 'string';
+    public $incrementing = true; // Jika idUser bukan auto-increment
 
     /**
      * The attributes that are mass assignable.
@@ -22,8 +25,8 @@ class User extends Authenticatable
         'idUser',
         'namaDpn',
         'namaBlkg',
-        'passUrs',
-        'birthYear',
+        'passUsr',
+        'tglLahir',
         'email',
     ];
 
