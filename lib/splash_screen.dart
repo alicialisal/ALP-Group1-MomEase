@@ -26,8 +26,8 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Center(
         child: Image.asset(
           'assets/logo.png', // Path gambar logo
-          width: 150,
-          height: 150,
+          width: 175,
+          height: 175,
         ),
       ),
     );
@@ -377,6 +377,7 @@ class WelcomePage4 extends StatelessWidget {
                     width: 250,
                     height: 200,
                   ),
+
                   const SizedBox(
                     height: 40,
                   ), // Spasi antara gambar biasa dan teks

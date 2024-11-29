@@ -266,10 +266,10 @@
       "languageVersion": "3.7"
     }
   ],
-  "generated": "2024-11-24T18:11:20.864390Z",
+  "generated": "2024-11-29T18:58:47.827567Z",
   "generator": "pub",
-  "generatorVersion": "3.7.0-183.0.dev",
+  "generatorVersion": "3.7.0-188.0.dev",
   "flutterRoot": "file:///C:/Users/Lenovo/flutter",
-  "flutterVersion": "3.27.0-1.0.pre.623",
+  "flutterVersion": "3.27.0-1.0.pre.668",
   "pubCache": "file:///C:/Users/Lenovo/AppData/Local/Pub/Cache"
 }
