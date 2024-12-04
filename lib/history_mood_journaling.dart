@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:google_fonts/google_fonts.dart';
+import 'detail_mood_journaling.dart';
 
 class HistoryPage extends StatefulWidget {
   @override
@@ -154,147 +155,191 @@ class _HistoryPageState extends State<HistoryPage> {
                         DateTime date = filteredData.keys.toList()[index];
                         Map<String, dynamic> moodDetails = filteredData[date]!;
 
-                        return Container(
-                          margin: EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(
-                              color: Color(0xff1B3F74),
-                              width: 1.5,
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => DetailPage(
+                                      date: date,
+                                      moodDetails: moodDetails,
+                                    ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 8,
                             ),
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(18.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  date.toLocal().toString().split(' ')[0],
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-
-                                SizedBox(height: 5),
-
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 14),
-                                      child: Image.asset(
-                                        _getEmoteImage(
-                                          moodDetails['overallMood'],
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(
+                                color: Color(0xff1B3F74),
+                                width: 1.5,
+                              ),
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 8.0,
+                                        ), // Jarak pada sisi kanan
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .center, // Mengatur posisi di tengah
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .center, // Mengatur posisi di tengah horizontal
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    Colors
+                                                        .blue
+                                                        .shade100, // Warna latar belakang
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      8.0,
+                                                    ), // Radius untuk border
+                                              ),
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 12.0,
+                                                vertical: 8.0,
+                                              ), // Padding dalam container
+                                              child: Text(
+                                                DateFormat('dd MMM').format(
+                                                  date,
+                                                ), // Format tanggal menjadi 12 Dec
+                                                style: GoogleFonts.poppins(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 8.0,
+                                            ), // Jarak antara tanggal dan emote
+                                            Image.asset(
+                                              _getEmoteImage(
+                                                moodDetails['overallMood'],
+                                              ),
+                                              height: 65,
+                                              width: 65,
+                                            ),
+                                          ],
                                         ),
-                                        height: 65,
-                                        width: 65,
                                       ),
-                                    ),
 
-                                    // Kolom Mood Details (User & Baby Mood)
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          // Mood User
-                                          Wrap(
-                                            spacing: 8.0,
-                                            runSpacing: 8.0,
-                                            children:
-                                                (moodDetails['userMood'] as List).map<
-                                                  Widget
-                                                >((mood) {
-                                                  return Container(
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                        color: Color(
-                                                          0xff74B6F2,
-                                                        ),
-                                                        width: 1,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            20,
+                                      // Kolom Mood Details (User & Baby Mood)
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            // Mood User
+                                            Wrap(
+                                              spacing: 8.0,
+                                              runSpacing: 8.0,
+                                              children:
+                                                  (moodDetails['userMood'] as List).map<
+                                                    Widget
+                                                  >((mood) {
+                                                    return Container(
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                          color: Color(
+                                                            0xff74B6F2,
                                                           ),
-                                                    ),
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                          horizontal: 10,
-                                                          vertical: 5,
+                                                          width: 1,
                                                         ),
-                                                    child: Text(
-                                                      mood,
-                                                      style:
-                                                          GoogleFonts.poppins(),
-                                                    ),
-                                                  );
-                                                }).toList(),
-                                          ),
-
-                                          SizedBox(height: 8),
-
-                                          // Mood Baby
-                                          Wrap(
-                                            spacing: 8.0,
-                                            runSpacing: 8.0,
-                                            children:
-                                                (moodDetails['babyMood'] as List).map<
-                                                  Widget
-                                                >((mood) {
-                                                  return Container(
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                        color: Color(
-                                                          0xffFFBCD9,
-                                                        ),
-                                                        width: 1,
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              20,
+                                                            ),
                                                       ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            20,
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                            horizontal: 10,
+                                                            vertical: 5,
                                                           ),
-                                                    ),
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                          horizontal: 10,
-                                                          vertical: 5,
+                                                      child: Text(
+                                                        mood,
+                                                        style:
+                                                            GoogleFonts.poppins(),
+                                                      ),
+                                                    );
+                                                  }).toList(),
+                                            ),
+
+                                            SizedBox(height: 8),
+
+                                            // Mood Baby
+                                            Wrap(
+                                              spacing: 8.0,
+                                              runSpacing: 8.0,
+                                              children:
+                                                  (moodDetails['babyMood'] as List).map<
+                                                    Widget
+                                                  >((mood) {
+                                                    return Container(
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                          color: Color(
+                                                            0xffFFBCD9,
+                                                          ),
+                                                          width: 1,
                                                         ),
-                                                    child: Text(
-                                                      mood,
-                                                      style:
-                                                          GoogleFonts.poppins(),
-                                                    ),
-                                                  );
-                                                }).toList(),
-                                          ),
-                                        ],
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              20,
+                                                            ),
+                                                      ),
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                            horizontal: 10,
+                                                            vertical: 5,
+                                                          ),
+                                                      child: Text(
+                                                        mood,
+                                                        style:
+                                                            GoogleFonts.poppins(),
+                                                      ),
+                                                    );
+                                                  }).toList(),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-
-                                SizedBox(height: 8),
-
-                                Text(
-                                  "${moodDetails['description']}",
-                                  style: GoogleFonts.poppins(),
-                                ),
-                                if (moodDetails['image'] != null)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 10.0),
-                                    child: Image.file(
-                                      File(moodDetails['image']),
-                                      height: 100,
-                                      width: 100,
-                                      fit: BoxFit.cover,
-                                    ),
+                                    ],
                                   ),
-                              ],
+
+                                  SizedBox(height: 8),
+
+                                  Text(
+                                    "${moodDetails['description']}",
+                                    style: GoogleFonts.poppins(),
+                                  ),
+                                  if (moodDetails['image'] != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 10.0),
+                                      child: Image.file(
+                                        File(moodDetails['image']),
+                                        height: 100,
+                                        width: 100,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         );

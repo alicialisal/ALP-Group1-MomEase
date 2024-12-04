@@ -249,14 +249,60 @@ class _FillMoodPageState extends State<FillMoodPage> {
     });
   }
 
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  List<XFile>? _images =
+      []; // Variabel untuk menampung gambar-gambar yang dipilih
 
-    if (pickedFile != null) {
-      setState(() {
-        _image = pickedFile;
-      });
+  Future<void> _pickImages() async {
+    final picker = ImagePicker();
+
+    // Tampilkan dialog untuk memilih antara galeri atau kamera
+    final selectedSource = await showDialog<ImageSource>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Pick Images"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.camera),
+                title: Text("Camera"),
+                onTap: () {
+                  Navigator.pop(context, ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.photo_album),
+                title: Text("Gallery"),
+                onTap: () {
+                  Navigator.pop(context, ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (selectedSource != null) {
+      if (selectedSource == ImageSource.gallery) {
+        // Pilih banyak gambar dari galeri
+        final pickedFiles = await picker.pickMultiImage();
+
+        if (pickedFiles != null) {
+          setState(() {
+            _images = pickedFiles; // Menyimpan daftar gambar yang dipilih
+          });
+        }
+      } else {
+        // Jika memilih dari kamera, hanya bisa mengambil satu foto
+        final pickedFile = await picker.pickImage(source: selectedSource);
+        if (pickedFile != null) {
+          setState(() {
+            _images = [pickedFile]; // Menyimpan satu gambar dari kamera
+          });
+        }
+      }
     }
   }
 
@@ -446,7 +492,7 @@ class _FillMoodPageState extends State<FillMoodPage> {
               ),
               SizedBox(height: 16),
               GestureDetector(
-                onTap: _pickImage,
+                onTap: _pickImages,
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 16.0),
                   decoration: BoxDecoration(
