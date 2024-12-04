@@ -58,6 +58,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
         duration: Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
+    } else {
+      // Jika di halaman terakhir, navigasi ke halaman login
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
     }
   }
 
