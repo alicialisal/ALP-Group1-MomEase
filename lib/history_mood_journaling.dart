@@ -190,7 +190,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                          right: 8.0,
+                                          right: 5.5,
                                         ), // Jarak pada sisi kanan
                                         child: Column(
                                           mainAxisAlignment:
