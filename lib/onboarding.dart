@@ -206,16 +206,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         ),
                       ),
                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
+                        backgroundColor: WidgetStateProperty.all<Color>(
                           Color(0xff6495ED),
                         ),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
-                            ),
-                        minimumSize: MaterialStateProperty.all(Size(300, 50)),
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                        ),
+                        minimumSize: WidgetStateProperty.all(Size(300, 50)),
                       ),
                     ),
                     SizedBox(height: 10),
@@ -230,20 +229,19 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         ),
                       ),
                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
+                        backgroundColor: WidgetStateProperty.all<Color>(
                           Color(0xffffffff),
                         ),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.0),
-                                side: BorderSide(
-                                  color: Color(0xffFFBCD9),
-                                  width: 2,
-                                ),
-                              ),
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                            side: BorderSide(
+                              color: Color(0xffFFBCD9),
+                              width: 2,
                             ),
-                        minimumSize: MaterialStateProperty.all(Size(300, 50)),
+                          ),
+                        ),
+                        minimumSize: WidgetStateProperty.all(Size(300, 50)),
                       ),
                     ),
                   ],
