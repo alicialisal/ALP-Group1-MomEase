@@ -330,19 +330,13 @@ class _HistoryPageState extends State<HistoryPage> {
                                   SizedBox(height: 8),
 
                                   Text(
-                                    "${moodDetails['description']}",
-                                    style: GoogleFonts.poppins(),
-                                  ),
-                                  if (moodDetails['image'] != null)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 10.0),
-                                      child: Image.file(
-                                        File(moodDetails['image']),
-                                        height: 100,
-                                        width: 100,
-                                        fit: BoxFit.cover,
-                                      ),
+                                    "Click for more details",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 15,
+                                      fontStyle: FontStyle.italic,
+                                      color: Color(0xff808080),
                                     ),
+                                  ),
                                 ],
                               ),
                             ),
