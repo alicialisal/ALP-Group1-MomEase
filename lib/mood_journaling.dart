@@ -112,7 +112,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications), // Ikon notifikasi
+            icon: Icon(Icons.notifications_outlined), // Ikon notifikasi
             onPressed: () {
               // Arahkan ke halaman Notifikasi
               Navigator.push(
@@ -285,23 +285,15 @@ class _FillMoodPageState extends State<FillMoodPage> {
     );
 
     if (selectedSource != null) {
-      if (selectedSource == ImageSource.gallery) {
-        // Pilih banyak gambar dari galeri
-        final pickedFiles = await picker.pickMultiImage();
+      final pickedFile =
+          selectedSource == ImageSource.gallery
+              ? await picker.pickImage(source: ImageSource.gallery)
+              : await picker.pickImage(source: ImageSource.camera);
 
-        if (pickedFiles != null) {
-          setState(() {
-            _images = pickedFiles; // Menyimpan daftar gambar yang dipilih
-          });
-        }
-      } else {
-        // Jika memilih dari kamera, hanya bisa mengambil satu foto
-        final pickedFile = await picker.pickImage(source: selectedSource);
-        if (pickedFile != null) {
-          setState(() {
-            _images = [pickedFile]; // Menyimpan satu gambar dari kamera
-          });
-        }
+      if (pickedFile != null) {
+        setState(() {
+          _image = pickedFile; // Perbarui _image dengan gambar yang dipilih
+        });
       }
     }
   }

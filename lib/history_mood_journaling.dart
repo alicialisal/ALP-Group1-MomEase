@@ -164,6 +164,11 @@ class _HistoryPageState extends State<HistoryPage> {
                                     (context) => DetailPage(
                                       date: date,
                                       moodDetails: moodDetails,
+                                      selectedEmote: _getEmoteImage(
+                                        moodDetails['overallMood'],
+                                      ), // Mengirim emote yang dipilih
+                                      selectedMood:
+                                          moodDetails['overallMood'], // Mengirim status mood
                                     ),
                               ),
                             );
