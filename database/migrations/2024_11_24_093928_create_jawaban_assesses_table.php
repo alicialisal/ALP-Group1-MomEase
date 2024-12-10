@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('idSesiAssess');
             $table->tinyInteger('idPertanyaan');
             $table->tinyInteger('jawaban');
-            $table->timestamps();
 
             $table->foreign('idSesiAssess')->references('idSesiAssess')->on('sesi_assessment');
             $table->foreign('idPertanyaan')->references('idPertanyaan')->on('pertanyaan_assess');

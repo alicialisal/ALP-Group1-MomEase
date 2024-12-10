@@ -15,8 +15,9 @@ Route::get('/', function() {
 
 Route::post("register",[AuthController::class,"register"]);
 Route::post("login",[AuthController::class,"login"]);
-//posts
+//journaling
 Route::apiResource('/journaling', App\Http\Controllers\Api\MoodJournalingController::class);
+Route::get('/mood-summary', [App\Http\Controllers\Api\MoodJournalingController::class, 'getMoodSummary']);
 
 //photos
 Route::apiResource('/journaling/photos', App\Http\Controllers\Api\PhotoGalleryController::class);

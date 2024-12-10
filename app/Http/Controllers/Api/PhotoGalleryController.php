@@ -30,7 +30,7 @@ class PhotoGalleryController extends Controller
             ->where('idJournaling', $request->idJournaling)
             ->count();
     
-        if ($photoCount >= 3) {
+        if ($photoCount >= 1) {
             return response()->json(['error' => 'Maksimal 3 foto untuk setiap jurnal.'], 422);
         }
 
@@ -92,7 +92,7 @@ class PhotoGalleryController extends Controller
         // Upload dan simpan gambar
         try {
         //check if image is not empty
-            if ($request->filled('photo')) {
+            if ($request->hasFile('photo')) {
             
                 //upload image
                 $photo = $request->file('photo');
@@ -116,7 +116,7 @@ class PhotoGalleryController extends Controller
                 'error' => 'An error occurred while uploading the photo. Please try again later.',
             ], 500);
         }
-        // return new PhotoGalleryResource(true, 'Data Photo Gallery Berhasil Diubah tanpa Perubahan Foto!', $gallery);
+        return new PhotoGalleryResource(true, 'Data Photo Gallery Berhasil Diubah tanpa Perubahan Foto!', $gallery);
     }
 
     /**
