@@ -9,6 +9,9 @@ class photoGallery extends Model
 {
     use HasFactory;
 
+    protected $table = 'photo_gallery';
+    protected $primaryKey = 'id';
+
     protected $fillable = [
         'idJournaling',
         'photo',
