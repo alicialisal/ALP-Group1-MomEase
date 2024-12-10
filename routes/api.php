@@ -18,6 +18,9 @@ Route::post("login",[AuthController::class,"login"]);
 //posts
 Route::apiResource('/journaling', App\Http\Controllers\Api\MoodJournalingController::class);
 
+//photos
+Route::apiResource('/journaling/photos', App\Http\Controllers\Api\PhotoGalleryController::class);
+
 Route::get('/profiles', [ProfileController::class, 'index']);
 Route::put('/profiles/{id}', [ProfileController::class, 'update']);
 
