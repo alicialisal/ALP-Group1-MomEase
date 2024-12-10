@@ -22,6 +22,9 @@ Route::get('/mood-summary', [App\Http\Controllers\Api\MoodJournalingController::
 //photos
 Route::apiResource('/journaling/photos', App\Http\Controllers\Api\PhotoGalleryController::class);
 
+//self-assessment
+Route::apiResource('/self-assess', App\Http\Controllers\Api\SelfAssessController::class);
+
 Route::get('/profiles', [ProfileController::class, 'index']);
 Route::put('/profiles/{id}', [ProfileController::class, 'update']);
 

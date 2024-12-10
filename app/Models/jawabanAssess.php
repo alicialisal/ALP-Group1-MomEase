@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class jawabanAssess extends Model
 {
+    protected $table = 'jawaban_assess';
+    protected $primaryKey = 'idJawab';
     use HasFactory;
 
     protected $fillable = [
@@ -15,6 +17,9 @@ class jawabanAssess extends Model
         'idPertanyaan',
         'jawaban',
     ];
+
+    public $timestamps = false;
+    public $updated_at = false;
 
     public function sesiAssess()
     {

@@ -15,7 +15,6 @@ return new class extends Migration
             $table->tinyInteger('idPertanyaan')->primary();
             $table->text('pertanyaan');
             $table->char('bobot', length:5);
-            $table->timestamps();
         });
     }
 

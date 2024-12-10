@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SelfAssessmentResource;
+use App\Models\jawabanAssess;
+use App\Models\sesiAssessment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 
 class SelfAssessController extends Controller
 {
@@ -16,12 +17,24 @@ class SelfAssessController extends Controller
     {
         $formattedIdUser = str_pad($idUser, 5, '0', STR_PAD_LEFT);
         $currentYear = now()->format('y');
-        return "SA" . $currentYear . $formattedIdUser . Str::random(5);
-    }
 
-    private function generateIdJawaban($idSesiAssess, $idPertanyaan)
-    {
-        return $idSesiAssess . str_pad($idPertanyaan, 3, '0', STR_PAD_LEFT);
+        // Ambil jurnal terakhir untuk user ini
+        $lastSesi = DB::table('sesi_assessment')
+            ->where('idUser', $idUser)
+            ->latest('idSesiAssess') // Mengurutkan berdasarkan ID Sesi
+            ->first();
+
+        // Ekstrak angka urut dari ID terakhir jika ada
+        $lastNumber = 0;
+        if ($lastSesi) {
+            $lastId = $lastSesi->idSesiAssess;
+            $lastNumber = (int) substr($lastId, -3); // Ambil 3 digit terakhir sebagai angka urut
+        }
+
+        // Tambahkan angka urut berikutnya
+        $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+
+        return "SA" . $currentYear . $formattedIdUser . $newNumber;
     }
 
     public function store(Request $request)
@@ -45,7 +58,7 @@ class SelfAssessController extends Controller
         $totalSkor = collect($request->answers)->sum('jawaban');
 
         // Simpan ke sesi_assessment
-        DB::table('sesi_assessment')->insert([
+        $sesiAssess = SesiAssessment::create([
             'idSesiAssess' => $idSesiAssess,
             'idUser'       => $request->idUser,
             'skorTotal'    => $totalSkor,
@@ -53,26 +66,16 @@ class SelfAssessController extends Controller
         ]);
 
         // Simpan jawaban ke jawaban_assess
-        foreach ($request->answers as $answers) {
-            DB::table('jawaban_assess')->insert([
-                'idJawab'       => $this->generateIdJawaban($idSesiAssess, $answers['idPertanyaan']),
+        foreach ($request->answers as $answer) {
+            $jawabanAssess = JawabanAssess::create([
+                'idJawab'       => 1,
                 'idSesiAssess'  => $idSesiAssess,
-                'idPertanyaan'  => $answers['idPertanyaan'],
-                'jawaban'       => $answers['jawaban'],
-                'created_at'    => Carbon::now(),
-                'updated_at'    => Carbon::now(),
+                'idPertanyaan'  => $answer['idPertanyaan'],
+                'jawaban'       => $answer['jawaban'],
             ]);
         }
 
-        // Return response menggunakan resource
-        $response = [
-            'idSesiAssess' => $idSesiAssess,
-            'idUser'       => $request->idUser,
-            'skorTotal'    => $totalSkor,
-            'waktuTes'     => Carbon::now(),
-        ];
-
-        return new SelfAssessmentResource(true, 'Self-Assessment berhasil disimpan!', $response);
+        return new SelfAssessmentResource(true, 'Self-Assessment berhasil disimpan!', $sesiAssess);
     }
 
     public function show($idSesiAssess)

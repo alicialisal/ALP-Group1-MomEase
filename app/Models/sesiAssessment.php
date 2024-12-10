@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class sesiAssessment extends Model
 {
+    protected $table = 'sesi_assessment';
+    protected $primaryKey = 'idSesiAssess';
+    protected $keyType = 'string';
     use HasFactory;
 
     protected $fillable = [
@@ -15,6 +18,9 @@ class sesiAssessment extends Model
         'skorTotal',
         'waktuTes',
     ];
+
+    public $timestamps = false;
+    public $updated_at = false;
 
     public function user()
     {

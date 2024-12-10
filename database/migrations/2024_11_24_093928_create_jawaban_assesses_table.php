@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('jawaban_assess', function (Blueprint $table) {
-            $table->string('idJawab',15)->primary();
-            $table->string('idSesiAssess');
+            $table->id('idJawab');
+            $table->string('idSesiAssess',15);
             $table->tinyInteger('idPertanyaan');
             $table->tinyInteger('jawaban');
 
