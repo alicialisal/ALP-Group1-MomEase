@@ -467,10 +467,10 @@
       "name": "front_end",
       "rootUri": "../",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "3.5"
     }
   ],
-  "generated": "2024-12-09T08:34:30.009387Z",
+  "generated": "2024-12-11T00:04:54.944444Z",
   "generator": "pub",
   "generatorVersion": "3.7.0-188.0.dev",
   "flutterRoot": "file:///C:/Users/Lenovo/flutter",
