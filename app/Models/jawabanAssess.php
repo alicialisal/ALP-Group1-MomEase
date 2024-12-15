@@ -13,7 +13,7 @@ class jawabanAssess extends Model
 
     protected $fillable = [
         'idJawab',
-        'idSesiAsses',
+        'idSesiAssess',
         'idPertanyaan',
         'jawaban',
     ];

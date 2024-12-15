@@ -68,7 +68,6 @@ class SelfAssessController extends Controller
         // Simpan jawaban ke jawaban_assess
         foreach ($request->answers as $answer) {
             $jawabanAssess = JawabanAssess::create([
-                'idJawab'       => 1,
                 'idSesiAssess'  => $idSesiAssess,
                 'idPertanyaan'  => $answer['idPertanyaan'],
                 'jawaban'       => $answer['jawaban'],
