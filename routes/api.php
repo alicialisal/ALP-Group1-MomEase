@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ChatbotController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
@@ -28,3 +29,12 @@ Route::apiResource('/self-assess', App\Http\Controllers\Api\SelfAssessController
 Route::get('/profiles', [ProfileController::class, 'index']);
 Route::put('/profiles/{id}', [ProfileController::class, 'update']);
 
+
+//Chatbot API
+Route::prefix('chatbot')->group(function () {
+    Route::get('/', [ChatbotController::class, 'index']); // List all chat sessions
+    Route::post('/', [ChatbotController::class, 'store']); // Create a new chat session
+    Route::get('/{id}', [ChatbotController::class, 'show']); // Retrieve a specific chat session
+    Route::post('/{id}/message', [ChatbotController::class, 'kirimPesan']); // Send a message to the chatbot
+    Route::delete('/{id}', [ChatbotController::class, 'destroy']); // End a chat session
+});
