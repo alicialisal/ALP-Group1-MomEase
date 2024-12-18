@@ -98,4 +98,42 @@ class SelfAssessController extends Controller
 
         return new SelfAssessmentResource(true, 'Detail Self-Assessment ditemukan', $response);
     }
+
+    public function getSesiAssessSummary(Request $request)
+    {
+        // Validasi parameter
+        $validator = Validator::make($request->all(), [
+            'month' => 'required|integer|between:1,12', // Bulan antara 1-12
+            'year'  => 'required|integer|min:2000|max:' . Carbon::now()->year, // Tahun minimal 2000 sampai tahun ini
+        ]);
+    
+        // Jika validasi gagal, kembalikan respons error
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+    
+        // Ambil bulan dan tahun dari parameter
+        $month = $request->input('month');
+        $year = $request->input('year');
+    
+        // Query untuk mendapatkan data mood per hari
+        $dailyMoods = sesiAssessment::select(
+            DB::raw('DATE(waktuTes) as date'), // Ambil tanggal
+            'skorTotal'                             // Ambil nilai mood
+        )
+            ->whereMonth('waktuTes', $month)
+            ->whereYear('waktuTes', $year)
+            // ->groupBy(DB::raw('DATE(tglInput)'), 'mood') // Kelompokkan berdasarkan tanggal dan mood
+            ->orderBy(DB::raw('DATE(waktuTes)'))        // Urutkan berdasarkan tanggal
+            ->get();
+
+        // Format respons
+        $response = [
+            'month' => $month,
+            'year' => $year,
+            'data' => $dailyMoods,
+        ];
+
+        return response()->json($response, 200);
+    }
 }

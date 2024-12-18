@@ -40,7 +40,7 @@ class AuthController extends Controller
         ]);
 
         // Membuat token setelah register
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken($request->namaDpn);
 
         // Mengembalikan respons berhasil
         return response()->json([

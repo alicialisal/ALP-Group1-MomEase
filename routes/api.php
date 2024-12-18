@@ -25,6 +25,7 @@ Route::apiResource('/journaling/photos', App\Http\Controllers\Api\PhotoGalleryCo
 
 //self-assessment
 Route::apiResource('/self-assess', App\Http\Controllers\Api\SelfAssessController::class);
+Route::get('/assess-summary', [App\Http\Controllers\Api\SelfAssessController::class, 'getSesiAssessSummary']);
 
 Route::get('/profiles', [ProfileController::class, 'index']);
 Route::put('/profiles/{id}', [ProfileController::class, 'update']);
