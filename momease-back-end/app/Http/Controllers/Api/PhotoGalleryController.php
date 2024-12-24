@@ -6,13 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PhotoGalleryResource;
 use App\Models\photoGallery;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-class PhotoGalleryController extends Controller
+class PhotoGalleryController extends Controller implements HasMiddleware
 {
+    public static function middleware()
+    {
+        return [
+            new Middleware('auth:sanctum', except:['show'])
+        ];
+    }
     public function store(Request $request)
     {
         // Validasi input
@@ -31,7 +39,7 @@ class PhotoGalleryController extends Controller
             ->count();
     
         if ($photoCount >= 1) {
-            return response()->json(['error' => 'Maksimal 3 foto untuk setiap jurnal.'], 422);
+            return response()->json(['error' => 'Maksimal 1 foto untuk setiap jurnal.'], 422);
         }
 
         // Upload dan simpan gambar

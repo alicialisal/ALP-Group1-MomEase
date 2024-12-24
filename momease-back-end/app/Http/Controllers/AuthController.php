@@ -51,7 +51,7 @@ class AuthController extends Controller
                 'namaBlkg' => $user->namaBlkg,
                 'email' => $user->email,
             ],
-            'token' => $token,
+            'token' => $token -> plainTextToken,
         ], 201);
     }
 
@@ -59,7 +59,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',  // Memastikan email ada dan valid
+            'email' => 'required|email|exists:users',  // Memastikan email ada dan valid
             'passUsr' => 'required|string|min:8',  // Memastikan password ada dan memiliki minimal 8 karakter
         ]);
     
@@ -82,12 +82,22 @@ class AuthController extends Controller
         }
     
         // Generate token
-        $token = $user->createToken('auth_token')->accessToken;
+        $token = $user->createToken($request->email);
     
         // Mengembalikan user dan token
         return response()->json([
             'user' => new UserResource($user), // Menggunakan UserResource untuk memformat data user
-            'token' => $token                  // Token untuk autentikasi
+            'token' => $token->plainTextToken            // Token untuk autentikasi
         ], 200);
+    }
+
+    // Logout Function
+    public function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
+
+        return [
+            'message' => 'You are logged out.'
+        ];
     }
 }
