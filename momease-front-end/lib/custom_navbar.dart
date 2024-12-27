@@ -10,40 +10,24 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: CustomFloatingNavBar(),
+      home: CustomFloatingNavBar(
+        selectedIndex: 0,
+        onItemTapped: (index) {
+          // Fungsi ini dapat diubah sesuai dengan logika navigasi yang diinginkan
+        },
+      ),
     );
   }
 }
 
-class CustomFloatingNavBar extends StatefulWidget {
-  @override
-  _CustomFloatingNavBarState createState() => _CustomFloatingNavBarState();
-}
+class CustomFloatingNavBar extends StatelessWidget {
+  final int selectedIndex;
+  final Function(int) onItemTapped;
 
-class _CustomFloatingNavBarState extends State<CustomFloatingNavBar> {
-  int _selectedIndex = 0;
-
-  // Fungsi untuk navigasi ke halaman yang sesuai
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    // Daftar halaman
-    List<Widget> pages = [
-      // ChatBotPage(),
-      // RelaxationPage(),
-      MoodJournaling(),
-      // BlogsPage(),
-      // ProfilePage(),
-    ];
-
-    // Navigasi ke halaman baru
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => pages[index]),
-    );
-  }
+  CustomFloatingNavBar({
+    required this.selectedIndex,
+    required this.onItemTapped,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +35,7 @@ class _CustomFloatingNavBarState extends State<CustomFloatingNavBar> {
       body: SafeArea(
         child: Center(
           child: Text(
-            'Selected: ${_selectedIndex == 2 ? "Mood Tracker" : "Item $_selectedIndex"}',
+            'Selected: ${selectedIndex == 2 ? "Mood Tracker" : "Item $selectedIndex"}',
             style: TextStyle(fontSize: 20),
           ),
         ),
@@ -94,7 +78,7 @@ class _CustomFloatingNavBarState extends State<CustomFloatingNavBar> {
           Positioned(
             bottom: 40,
             child: GestureDetector(
-              onTap: () => _onItemTapped(2), // Tombol ke Mood Tracker
+              onTap: () => onItemTapped(2), // Tombol ke Mood Tracker
               child: Container(
                 height: 90,
                 width: 90,
@@ -126,7 +110,7 @@ class _CustomFloatingNavBarState extends State<CustomFloatingNavBar> {
 
   Widget _buildNavItem(IconData icon, String label, int index) {
     return GestureDetector(
-      onTap: () => _onItemTapped(index),
+      onTap: () => onItemTapped(index),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8),
         child: Column(
@@ -136,7 +120,7 @@ class _CustomFloatingNavBarState extends State<CustomFloatingNavBar> {
             Icon(
               icon,
               color:
-                  _selectedIndex == index ? Colors.blueAccent : Colors.black54,
+                  selectedIndex == index ? Colors.blueAccent : Colors.black54,
               size: 30,
             ),
             SizedBox(height: 5),

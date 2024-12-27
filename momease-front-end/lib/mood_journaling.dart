@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:front_end/custom_navbar.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
@@ -51,10 +52,8 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
 
     setState(() {
       // Decode JSON dan transformasikan menjadi Map<DateTime, Map<String, dynamic>>
-      _moodData = (jsonDecode(data) as Map<String, dynamic>).map<
-        DateTime,
-        Map<String, dynamic>
-      >((key, value) {
+      _moodData = (jsonDecode(data) as Map<String, dynamic>)
+          .map<DateTime, Map<String, dynamic>>((key, value) {
         // Mengkonversi string tanggal menjadi DateTime dan memastikan value menjadi Map<String, dynamic>
         return MapEntry(DateTime.parse(key), Map<String, dynamic>.from(value));
       });
@@ -80,9 +79,8 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (context) =>
-                FillMoodPage(selectedDate: date, moodData: _moodData[date]),
+        builder: (context) =>
+            FillMoodPage(selectedDate: date, moodData: _moodData[date]),
       ),
     );
 
@@ -123,7 +121,6 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
           ),
         ],
       ),
-
       body: Column(
         children: [
           TableCalendar(
@@ -180,7 +177,6 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                 );
               }
             },
-
             calendarBuilders: CalendarBuilders(
               markerBuilder: (context, day, _) {
                 if (_moodData.containsKey(day)) {
@@ -204,6 +200,12 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: CustomFloatingNavBar(
+        selectedIndex: 2,
+        onItemTapped: (index) {
+          // Handle navigation based on the selected index
+        },
       ),
     );
   }
@@ -285,10 +287,9 @@ class _FillMoodPageState extends State<FillMoodPage> {
     );
 
     if (selectedSource != null) {
-      final pickedFile =
-          selectedSource == ImageSource.gallery
-              ? await picker.pickImage(source: ImageSource.gallery)
-              : await picker.pickImage(source: ImageSource.camera);
+      final pickedFile = selectedSource == ImageSource.gallery
+          ? await picker.pickImage(source: ImageSource.gallery)
+          : await picker.pickImage(source: ImageSource.camera);
 
       if (pickedFile != null) {
         setState(() {
@@ -317,76 +318,69 @@ class _FillMoodPageState extends State<FillMoodPage> {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children:
-              moods.map((mood) {
-                bool isSelected = selectedMoods.contains(mood);
+          children: moods.map((mood) {
+            bool isSelected = selectedMoods.contains(mood);
 
-                // Determine the image name based on the selected state
-                String imageName =
-                    isSelected
-                        ? 'assets/emote/${mood.toLowerCase()}_selected.png'
-                        : 'assets/emote/${mood.toLowerCase()}.png';
+            // Determine the image name based on the selected state
+            String imageName = isSelected
+                ? 'assets/emote/${mood.toLowerCase()}_selected.png'
+                : 'assets/emote/${mood.toLowerCase()}.png';
 
-                // Set the background color based on mood category
-                Color moodBackgroundColor;
-                if (isBabyMood) {
-                  moodBackgroundColor =
-                      isSelected ? Color(0xFFFFBCD9) : Colors.grey.shade300;
-                } else {
-                  moodBackgroundColor =
-                      isSelected ? Color(0xFF74B6F2) : Colors.grey.shade300;
-                }
+            // Set the background color based on mood category
+            Color moodBackgroundColor;
+            if (isBabyMood) {
+              moodBackgroundColor =
+                  isSelected ? Color(0xFFFFBCD9) : Colors.grey.shade300;
+            } else {
+              moodBackgroundColor =
+                  isSelected ? Color(0xFF74B6F2) : Colors.grey.shade300;
+            }
 
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      if (isSelected) {
-                        selectedMoods.remove(mood);
-                      } else {
-                        selectedMoods.add(mood);
-                      }
-                    });
-                    onMoodSelected(mood);
-                  },
-                  child:
-                      showImages
-                          ? Column(
-                            children: [
-                              Image.asset(imageName, height: 40, width: 40),
-                              Text(
-                                mood,
-                                style: TextStyle(
-                                  color:
-                                      isSelected
-                                          ? Colors.black
-                                          : Colors.black54,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          )
-                          : Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16.0,
-                              vertical: 8.0,
-                            ),
-                            decoration: BoxDecoration(
-                              color: moodBackgroundColor,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              mood,
-                              style: TextStyle(
-                                color:
-                                    isSelected
-                                        ? const Color.fromARGB(255, 0, 0, 0)
-                                        : Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  if (isSelected) {
+                    selectedMoods.remove(mood);
+                  } else {
+                    selectedMoods.add(mood);
+                  }
+                });
+                onMoodSelected(mood);
+              },
+              child: showImages
+                  ? Column(
+                      children: [
+                        Image.asset(imageName, height: 40, width: 40),
+                        Text(
+                          mood,
+                          style: TextStyle(
+                            color: isSelected ? Colors.black : Colors.black54,
+                            fontWeight: FontWeight.bold,
                           ),
-                );
-              }).toList(),
+                        ),
+                      ],
+                    )
+                  : Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
+                      decoration: BoxDecoration(
+                        color: moodBackgroundColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        mood,
+                        style: TextStyle(
+                          color: isSelected
+                              ? const Color.fromARGB(255, 0, 0, 0)
+                              : Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+            );
+          }).toList(),
         ),
       ],
     );

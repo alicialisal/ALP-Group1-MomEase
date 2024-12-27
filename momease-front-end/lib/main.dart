@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             // Menggunakan font Poppins di seluruh aplikasi
             textTheme: GoogleFonts.poppinsTextTheme(
-              Theme.of(context).textTheme,  
+              Theme.of(context).textTheme,
             ),
           ),
           debugShowCheckedModeBanner: false,
