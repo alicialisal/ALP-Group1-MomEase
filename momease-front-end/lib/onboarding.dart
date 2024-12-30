@@ -115,9 +115,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage(_images[index]),
-                          fit:
-                              BoxFit
-                                  .contain, // Menjaga gambar tetap proporsional
+                          fit: BoxFit
+                              .contain, // Menjaga gambar tetap proporsional
                         ),
                       ),
                     ),
@@ -168,15 +167,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   duration: Duration(milliseconds: 300),
                   margin: EdgeInsets.symmetric(horizontal: 5),
                   height: 4.0, // Ukuran tinggi garis
-                  width:
-                      _currentIndex == index
-                          ? 20.0 // Lebar garis aktif lebih panjang
-                          : 15.0, // Lebar garis tidak aktif
+                  width: _currentIndex == index
+                      ? 20.0 // Lebar garis aktif lebih panjang
+                      : 15.0, // Lebar garis tidak aktif
                   decoration: BoxDecoration(
-                    color:
-                        _currentIndex == index
-                            ? Color(0xff324D81)
-                            : Colors.grey,
+                    color: _currentIndex == index
+                        ? Color(0xff324D81)
+                        : Colors.grey,
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 );

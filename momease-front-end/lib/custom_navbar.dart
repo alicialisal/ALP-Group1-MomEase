@@ -1,26 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:front_end/mood_journaling.dart';
 
-void main() {
-  runApp(MyApp());
-}
+// Pastikan halaman yang sesuai ada
+import 'chatbot.dart';
+import 'relaxation.dart';
+import 'mood_journaling.dart';
+import 'blogs.dart';
+import 'profile.dart';
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: CustomFloatingNavBar(
-        selectedIndex: 0,
-        onItemTapped: (index) {
-          // Fungsi ini dapat diubah sesuai dengan logika navigasi yang diinginkan
-        },
-      ),
-    );
-  }
-}
-
-class CustomFloatingNavBar extends StatelessWidget {
+// Modifikasi CustomFloatingNavBar
+class CustomFloatingNavBar extends StatefulWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
 
@@ -30,15 +18,38 @@ class CustomFloatingNavBar extends StatelessWidget {
   });
 
   @override
+  _CustomFloatingNavBarState createState() => _CustomFloatingNavBarState();
+}
+
+class _CustomFloatingNavBarState extends State<CustomFloatingNavBar> {
+  late int _selectedIndex;
+
+  final List<Widget> _pages = [
+    ChatBotPage(),
+    RelaxationPage(),
+    MoodJournaling(),
+    BlogsPage(),
+    ProfilePage(),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.selectedIndex;
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    widget.onItemTapped(index);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: Text(
-            'Selected: ${selectedIndex == 2 ? "Mood Tracker" : "Item $selectedIndex"}',
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
+        child: _pages[_selectedIndex],
       ),
       bottomNavigationBar: Stack(
         alignment: Alignment.bottomCenter,
@@ -46,19 +57,20 @@ class CustomFloatingNavBar extends StatelessWidget {
         children: [
           // Bottom Navigation Bar
           Container(
-            height: 80,
-            margin: EdgeInsets.only(bottom: 20).add(
-              EdgeInsets.symmetric(horizontal: 15),
+            height: 60, // Kurangi tinggi navbar
+            margin: EdgeInsets.only(bottom: 15).add(
+              EdgeInsets.symmetric(horizontal: 10),
             ),
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: EdgeInsets.symmetric(
+                horizontal: 15, vertical: 5), // Kurangi padding
             decoration: BoxDecoration(
               color: Colors.lightBlue.shade100,
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black12,
-                  blurRadius: 10,
-                  offset: Offset(0, 5),
+                  blurRadius: 8,
+                  offset: Offset(0, 4),
                 ),
               ],
             ),
@@ -67,38 +79,39 @@ class CustomFloatingNavBar extends StatelessWidget {
               children: [
                 _buildNavItem(Icons.chat_bubble_outline, 'ChatBot', 0),
                 _buildNavItem(Icons.self_improvement, 'Relaxation', 1),
-                SizedBox(width: 75),
+                SizedBox(width: 60), // Kurangi spasi untuk tombol tengah
                 _buildNavItem(Icons.article_outlined, 'Blogs', 3),
                 _buildNavItem(Icons.person_outline, 'Profile', 4),
               ],
             ),
           ),
 
-          // Tombol Tengah
+          // Tombol Tengah (Mood Tracker)
           Positioned(
-            bottom: 40,
+            bottom: 30, // Sesuaikan posisi
+            // right: -2,
             child: GestureDetector(
-              onTap: () => onItemTapped(2), // Tombol ke Mood Tracker
+              onTap: () => _onItemTapped(2),
               child: Container(
-                height: 90,
-                width: 90,
+                height: 70, // Perkecil ukuran tombol tengah
+                width: 70,
                 padding: EdgeInsets.all(1),
                 decoration: BoxDecoration(
                   color: Color(0xFFFFBCD9),
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 4),
+                  border: Border.all(color: Colors.white, width: 3),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black12,
-                      blurRadius: 10,
-                      offset: Offset(0, 5),
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
                     ),
                   ],
                 ),
                 child: Icon(
                   Icons.emoji_emotions_outlined,
                   color: Colors.white,
-                  size: 50,
+                  size: 40, // Perkecil ukuran ikon
                 ),
               ),
             ),
@@ -110,9 +123,9 @@ class CustomFloatingNavBar extends StatelessWidget {
 
   Widget _buildNavItem(IconData icon, String label, int index) {
     return GestureDetector(
-      onTap: () => onItemTapped(index),
+      onTap: () => _onItemTapped(index),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8),
+        padding: EdgeInsets.symmetric(horizontal: 5), // Kurangi padding item
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -120,15 +133,15 @@ class CustomFloatingNavBar extends StatelessWidget {
             Icon(
               icon,
               color:
-                  selectedIndex == index ? Colors.blueAccent : Colors.black54,
-              size: 30,
+                  _selectedIndex == index ? Colors.blueAccent : Colors.black54,
+              size: 24, // Perkecil ukuran ikon
             ),
-            SizedBox(height: 5),
+            SizedBox(height: 3), // Kurangi jarak
             Text(
               label,
               style: TextStyle(
                 color: Colors.black,
-                fontSize: 12,
+                fontSize: 10, // Perkecil ukuran teks
               ),
             ),
           ],
