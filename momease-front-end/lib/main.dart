@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:front_end/blogs.dart';
+import 'package:front_end/chatbot.dart';
+import 'package:front_end/mood_journaling.dart';
+import 'package:front_end/profile.dart';
+import 'package:front_end/relaxation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'splash_screen.dart';
 
@@ -23,6 +28,14 @@ class MyApp extends StatelessWidget {
             ),
           ),
           debugShowCheckedModeBanner: false,
+          initialRoute: '/mood_journaling',
+          routes: {
+            '/chatbot': (context) => ChatBotPage(),
+            '/relaxation': (context) => RelaxationPage(),
+            '/mood_journaling': (context) => MoodJournaling(),
+            '/blogs': (context) => BlogsPage(),
+            '/profile': (context) => ProfilePage(),
+          },
           home: SplashScreen(), // Atur SplashScreen sebagai layar pertama
         );
       },
