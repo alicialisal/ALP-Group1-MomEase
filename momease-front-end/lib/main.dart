@@ -28,15 +28,15 @@ class MyApp extends StatelessWidget {
             ),
           ),
           debugShowCheckedModeBanner: false,
-          initialRoute: '/mood_journaling',
+          initialRoute: '/',
           routes: {
+            '/': (context) => SplashScreen(),
             '/chatbot': (context) => ChatBotPage(),
             '/relaxation': (context) => RelaxationPage(),
             '/mood_journaling': (context) => MoodJournaling(),
             '/blogs': (context) => BlogsPage(),
             '/profile': (context) => ProfilePage(),
           },
-          home: SplashScreen(), // Atur SplashScreen sebagai layar pertama
         );
       },
     );
