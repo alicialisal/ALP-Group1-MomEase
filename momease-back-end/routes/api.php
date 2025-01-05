@@ -28,9 +28,13 @@ Route::apiResource('/journaling/photos', App\Http\Controllers\Api\PhotoGalleryCo
 Route::apiResource('/self-assess', App\Http\Controllers\Api\SelfAssessController::class);
 Route::get('/assess-summary', [App\Http\Controllers\Api\SelfAssessController::class, 'getSesiAssessSummary']);
 
-Route::get('/profiles', [ProfileController::class, 'index']);
-Route::put('/profiles/{id}', [ProfileController::class, 'update']);
+Route::middleware('auth:sanctum')->get('/profile', function (Request $request) {
+    return $request->user();
+});
 
+Route::middleware('auth:sanctum')->get('/profile', function (Request $request) {
+    return $request->user();
+});
 
 //Chatbot API
 Route::prefix('chatbot')->group(function () {

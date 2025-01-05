@@ -2,22 +2,44 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Resources\UserResource;
 
 class ProfileController extends Controller
 {
-    public function index()
+    public function update(Request $request)
     {
-        return User::all();
+        $user = $request->user();
+            
+        // Validate the request
+        $validated = $request->validate([
+            'namaDpn' => 'string|max:255',
+            'namaBlkg' => 'nullable|string|max:255',
+            'email' => 'email|unique:users,email,' . $user->id,
+            'tglLahir' => 'date|before:today',
+        ]);
+
+        $user->update($validated);
+
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'profile' => new UserResource($user)
+        ]);
     }
 
-    public function update(Request $request, $id)
+    public function destroy(Request $request)
     {
-        $profile = User::findOrFail($id);
-        $profile->update($request->all());
-        return response()->json(['message' => 'Profile updated successfully', 'profile' => $profile]);
+        $user = $request->user();
+
+        // Delete all tokens
+        $user->tokens()->delete();
+
+        // Delete the user
+        $user->delete();
+
+        return response()->json([
+            'message' => 'Profile deleted successfully'
+        ], 200);
     }
 }
-
