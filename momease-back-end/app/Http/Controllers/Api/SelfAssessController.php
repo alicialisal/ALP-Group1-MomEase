@@ -7,12 +7,20 @@ use App\Http\Resources\SelfAssessmentResource;
 use App\Models\jawabanAssess;
 use App\Models\sesiAssessment;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-class SelfAssessController extends Controller
+class SelfAssessController extends Controller implements HasMiddleware
 {
+    public static function middleware()
+    {
+        return [
+            new Middleware('auth:sanctum', except:['show'])
+        ];
+    }
     private function generateIdSesiAssess($idUser)
     {
         $formattedIdUser = str_pad($idUser, 5, '0', STR_PAD_LEFT);

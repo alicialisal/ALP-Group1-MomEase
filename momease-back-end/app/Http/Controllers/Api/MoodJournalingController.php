@@ -6,12 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\MoodJournalingResource;
 use App\Models\moodJournaling;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 
-class MoodJournalingController extends Controller
+class MoodJournalingController extends Controller implements HasMiddleware
 {
+    public static function middleware()
+    {
+        return [
+            new Middleware('auth:sanctum', except:['index', 'show'])
+        ];
+    }
+
     public function index()
     {
         //get all posts
