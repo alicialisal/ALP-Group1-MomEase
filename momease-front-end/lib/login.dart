@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:front_end/mood_journaling.dart';
+
+import 'services/api_service.dart';
 import 'signup.dart';
 
 void main() {
@@ -27,6 +29,8 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final ApiService _apiService = ApiService();
+  bool _isLoading = false;
 
   void _login() {
     if (_formKey.currentState!.validate()) {
@@ -59,6 +63,42 @@ class _LoginPageState extends State<LoginPage> {
           content: Text('Harap isi semua kolom dengan benar'),
           duration: Duration(seconds: 2),
         ),
+      );
+    }
+  }
+
+  Future<void> _handleLogin() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final result = await _apiService.login(
+      _emailController.text,
+      _passwordController.text,
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (result['success']) {
+      // Login berhasil
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Login berhasil'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MoodJournaling()),
+        );
+      // Lakukan navigasi atau penyimpanan token
+    } else {
+      // Login gagal
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result['message'] ?? 'Login failed')),
       );
     }
   }
@@ -165,25 +205,27 @@ class _LoginPageState extends State<LoginPage> {
                 },
               ),
               SizedBox(height: 230),
+              _isLoading
+                ? CircularProgressIndicator() :
               // Tombol Login
-              ElevatedButton(
-                onPressed: _login,
-                child: Text(
-                  'Log in',
-                  style: TextStyle(
-                    color: Color(0xffffffff),
-                    fontWeight: FontWeight.w700,
-                    fontSize: 17,
+                ElevatedButton(
+                  onPressed: _handleLogin,
+                  child: Text(
+                    'Log in',
+                    style: TextStyle(
+                      color: Color(0xffffffff),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 17,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(double.infinity, 50),
+                    backgroundColor: Color(0xff6495ED),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size(double.infinity, 50),
-                  backgroundColor: Color(0xff6495ED),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
               SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'login.dart';
+import 'services/api_service.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -23,8 +25,60 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
+  final ApiService _apiService = ApiService();
+  bool _isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
+
+  Future<void> _handleRegister() async {
+    // if (_passwordController.text != _confirmPasswordController.text) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Passwords do not match')),
+    //   );
+    //   return;
+    // }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final userData = {
+      'idUser': "0",
+      'namaDpn': _firstNameController.text,
+      'namaBlkg': _lastNameController.text,
+      'passUsr': _passwordController.text,
+      'passUsr_confirmation': _passwordController.text,
+      // 'tglLahir': _tglLahirController.text,
+      'tglLahir': "2000-01-01",
+      'email': _emailController.text,
+    };
+
+    final result = await _apiService.register(userData);
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (result['success']) {
+      // Registrasi berhasil
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Sign Up berhasil'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        ); // Kembali ke halaman login
+    } else {
+      // Registrasi gagal
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result['message'] ?? 'Registration failed')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -237,16 +291,17 @@ class _SignUpPageState extends State<SignUpPage> {
 
                     // Tombol Sign Up
                     ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LoginPage(),
-                            ),
-                          );
-                        }
-                      },
+                      onPressed: _handleRegister,
+                      // onPressed: () {
+                      //   if (_formKey.currentState!.validate()) {
+                      //     Navigator.push(
+                      //       context,
+                      //       MaterialPageRoute(
+                      //         builder: (context) => LoginPage(),
+                      //       ),
+                      //     );
+                      //   }
+                      // },
                       child: Text(
                         'Sign Up',
                         style: TextStyle(
