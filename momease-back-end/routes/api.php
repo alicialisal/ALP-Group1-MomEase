@@ -31,8 +31,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/self-assess', App\Http\Controllers\Api\SelfAssessController::class);
     Route::get('/assess-summary', [App\Http\Controllers\Api\SelfAssessController::class, 'getSesiAssessSummary']);
 
-    Route::get('/profiles', [ProfileController::class, 'index']);
-    Route::put('/profiles/{id}', [ProfileController::class, 'update']);
+    Route::put('/profile', [ProfileController::class, 'update']);
+    Route::delete('/profile', [ProfileController::class, 'delete']);
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 
 
     //Chatbot API
