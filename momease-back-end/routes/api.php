@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\kegiatanRelaksasiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatbotController;
 use Illuminate\Http\Request;
@@ -26,6 +27,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //photos
     Route::apiResource('/journaling/photos', App\Http\Controllers\Api\PhotoGalleryController::class);
+
+    //kegiatanRelaksasi
+    // Route::apiResource('/relaksasi', App\Http\Controllers\Api\kegiatanRelaksasiController::class);
+    Route::get('/relaksasi', [kegiatanRelaksasiController::class, 'index']);
+    Route::get('/relaksasi/{id}', [kegiatanRelaksasiController::class, 'show']);
 
     //self-assessment
     Route::apiResource('/self-assess', App\Http\Controllers\Api\SelfAssessController::class);
