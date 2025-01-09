@@ -37,13 +37,8 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
-
-    //Chatbot API
-    Route::prefix('chatbot')->group(function () {
-        Route::get('/', [ChatbotController::class, 'index']); // List all chat sessions
-        Route::post('/', [ChatbotController::class, 'store']); // Create a new chat session
-        Route::get('/{id}', [ChatbotController::class, 'show']); // Retrieve a specific chat session
-        Route::post('/{id}/message', [ChatbotController::class, 'kirimPesan']); // Send a message to the chatbot
-        Route::delete('/{id}', [ChatbotController::class, 'destroy']); // End a chat session
-    });
+    Route::post('/chat/start', [ChatbotController::class, 'startChatSession']);
+    Route::post('/chat/{idSesi}/send', [ChatbotController::class, 'sendMessage']);
+    Route::post('/chat/{idSesi}/end', [ChatbotController::class, 'endChatSession']);
+    Route::get('/chat/{idSesi}/history', [ChatbotController::class, 'getChatHistory']);
 });
