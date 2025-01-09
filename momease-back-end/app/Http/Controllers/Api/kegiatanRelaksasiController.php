@@ -14,7 +14,7 @@ class kegiatanRelaksasiController extends Controller
     public function index()
     {
         //get all activities
-        $kegiatanRelaksasi = kegiatanRelaksasi::latest()->paginate(5);
+        $kegiatanRelaksasi = kegiatanRelaksasi::orderBy('namaKegiatan', 'desc')->paginate(5);
 
         //return collection of posts as a resource
         return new kegiatanRelaksasiResource(true, 'List Data Kegiatan Relaksasi', $kegiatanRelaksasi);

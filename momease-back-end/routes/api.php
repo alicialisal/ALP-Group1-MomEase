@@ -30,8 +30,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //kegiatanRelaksasi
     // Route::apiResource('/relaksasi', App\Http\Controllers\Api\kegiatanRelaksasiController::class);
-    Route::get('/relaksasi', [kegiatanRelaksasiController::class, 'index']);
-    Route::get('/relaksasi/{id}', [kegiatanRelaksasiController::class, 'show']);
+    Route::get('/relaksasi', [App\Http\Controllers\Api\kegiatanRelaksasiController::class, 'index']);
+    Route::get('/relaksasi/{id}', [App\Http\Controllers\Api\kegiatanRelaksasiController::class, 'show']);
 
     //self-assessment
     Route::apiResource('/self-assess', App\Http\Controllers\Api\SelfAssessController::class);

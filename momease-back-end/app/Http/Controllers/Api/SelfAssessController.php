@@ -21,6 +21,16 @@ class SelfAssessController extends Controller implements HasMiddleware
             new Middleware('auth:sanctum', except:['show'])
         ];
     }
+
+    public function index()
+    {
+        //get all sesi
+        $sesiAssessment = SesiAssessment::orderBy('waktuTes', 'desc')->paginate(5);
+
+        //return collection of posts as a resource
+        return new SelfAssessmentResource(true, 'List Data Sesi Assessment', $sesiAssessment);
+    }
+
     private function generateIdSesiAssess($idUser)
     {
         $formattedIdUser = str_pad($idUser, 5, '0', STR_PAD_LEFT);
