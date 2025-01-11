@@ -9,6 +9,7 @@ class pesan extends Model
 {
     use HasFactory;
 
+    protected $table = 'pesan';
     protected $fillable = [
         'idPesan',
         'idSesi',

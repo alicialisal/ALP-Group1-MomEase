@@ -2,97 +2,73 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\sesiChat;
-use App\Models\pesan;
+use App\Models\Pesan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
-
-//
+use Illuminate\Support\Facades\Validator;
 
 class ChatbotController extends Controller
 {
-    private $geminiApiUrl = "https://api.geminiai.com/chat";
-    private $geminiApiKey = "AIzaSyAhXwJ6NLgxqFJxXqXvZVGK2VzmS_lozP0";
 
-    public function startChatSession(Request $request)
+    public function sendMessage(Request $request)
     {
-        $user = $request->user();
-
-        $sesi = sesiChat::create([
-            'idSesi' => uniqid(),
-            'idUser' => $user->id,
-            'waktuMulai' => now(),
-            'isActive' => true,
+        $validator = Validator::make($request->all(), [
+            'idSesi' => 'required|string',
+            'pesan' => 'required|string',
         ]);
 
-        return response()->json($sesi);
-    }
-
-    public function sendMessage(Request $request, $idSesi)
-    {
-        $request->validate([
-            'message' => 'required|string',
-        ]);
-
-        $sesi = sesiChat::where('idSesi', $idSesi)->where('isActive', true)->first();
-
-        if (!$sesi) {
-            return response()->json(['error' => 'Session not found or inactive'], 404);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $pesan = pesan::create([
-            'idSesi' => $sesi->idSesi,
-            'idUser' => $sesi->idUser,
-            'pesanUser' => $request->message,
+        // Ambil user yang terautentikasiz
+        $user = Auth::user();
+
+        // Simpan pesan pengguna    ke database
+        $pesanUser = Pesan::create([
+            'idSesi' => $request->idSesi,
+            'pengirim' => $user->name ?? 'User', // Nama pengguna dari autentikasi
+            'pesan' => $request->pesan,
             'waktuKirim' => now(),
         ]);
 
+        // Kirim pesan ke API GeminiAI
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $this->geminiApiKey,
-        ])->post($this->geminiApiUrl, [
-            'message' => $request->message,
+            'Content-Type' => 'application/json',
+        ])->post('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . env('GEMINI_API_KEY'), [
+            'contents' => [
+                [
+                    'parts' => [
+                        ['text' => $request->pesan]
+                    ]
+                ]
+            ]
         ]);
 
         if ($response->failed()) {
-            return response()->json(['error' => 'Failed to connect to GeminiAI'], 500);
+            return response()->json([
+                'error' => 'Failed to communicate with GeminiAI.',
+                'details' => $response->json(),
+            ], 500);
         }
 
-        $botResponse = $response->json('response');
+        // Simpan respons GeminiAI ke database
+        $responseMessage = $response->json('response');
+        return response()->json([
+            $response
+        ], 200);
 
-        pesan::create([
-            'idSesi' => $sesi->idSesi,
-            'idUser' => null, // null indicates system/bot response
-            'pesanBot' => $botResponse,
+        $pesanAi = Pesan::create([
+            'idSesi' => $request->idSesi,
+            'pengirim' => 'chatBot',
+            'pesan' => $responseMessage,
             'waktuKirim' => now(),
         ]);
 
-        return response()->json(['user_message' => $pesan, 'bot_response' => $botResponse]);
-    }
-
-    public function endChatSession($idSesi)
-    {
-        $sesi = sesiChat::where('idSesi', $idSesi)->where('isActive', true)->first();
-
-        if (!$sesi) {
-            return response()->json(['error' => 'Session not found or already inactive'], 404);
-        }
-
-        $sesi->update([
-            'waktuSelesai' => now(),
-            'isActive' => false,
-        ]);
-
-        return response()->json(['message' => 'Session ended']);
-    }
-
-    public function getChatHistory($idSesi)
-    {
-        $sesi = sesiChat::with('pesan')->where('idSesi', $idSesi)->first();
-
-        if (!$sesi) {
-            return response()->json(['error' => 'Session not found'], 404);
-        }
-
-        return response()->json($sesi);
+        return response()->json([
+            'user_message' => $pesanUser,
+            'ai_response' => $pesanAi,
+        ], 200);
     }
 }

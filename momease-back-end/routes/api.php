@@ -17,6 +17,7 @@ Route::get('/', function() {
 
 Route::post("register",[AuthController::class,"register"]);
 Route::post("login",[AuthController::class,"login"]);
+Route::get("login",[AuthController::class,"error_login"])->name("login");
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post("logout",[AuthController::class,"logout"]);
@@ -37,8 +38,5 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
-    Route::post('/chat/start', [ChatbotController::class, 'startChatSession']);
-    Route::post('/chat/{idSesi}/send', [ChatbotController::class, 'sendMessage']);
-    Route::post('/chat/{idSesi}/end', [ChatbotController::class, 'endChatSession']);
-    Route::get('/chat/{idSesi}/history', [ChatbotController::class, 'getChatHistory']);
+    Route::post('/chat/send', [ChatbotController::class, 'sendMessage']);
 });
