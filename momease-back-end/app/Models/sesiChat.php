@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class sesiChat extends Model
 {
     use HasFactory;
-
+    protected $table = "sesi_chat";
     protected $fillable = [
         'idSesi',
         'idUser',
