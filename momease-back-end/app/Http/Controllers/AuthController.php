@@ -100,4 +100,11 @@ class AuthController extends Controller
             'message' => 'You are logged out.'
         ];
     }
+
+    public function error_login()
+    {
+        return response()->json([
+            'message' => 'Login dulu Momease.'
+        ], 400); 
+    }
 }

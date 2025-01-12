@@ -17,7 +17,7 @@ return new class extends Migration
             $table->timestamp('waktuMulai');
             $table->timestamp('waktuSelesai')->nullable()->default(null);
             $table->tinyInteger('isActive');
-
+            $table->timestamps(false);
             $table->foreign('idUser')->references('idUser')->on('users');
         });
     }
