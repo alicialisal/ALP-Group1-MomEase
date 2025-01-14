@@ -31,7 +31,7 @@ class kegiatanUserController extends Controller
     {
         //define validation rules
         $validator = Validator::make($request->all(), [
-            'idKegiatan' => 'required|string|max:15', // ID jurnal harus berupa string dengan panjang maksimal 15
+            'idKegiatan'   => 'required|exists:kegiatan_relaksasi,idKegiatan', // ID jurnal harus berupa string dengan panjang maksimal 15
             'idUser'       => 'required|exists:users,idUser', // ID user harus ada di tabel `users`
             'tglInput'     => 'required|date', // Tanggal input harus berupa tanggal yang valid
         ]);
@@ -49,7 +49,7 @@ class kegiatanUserController extends Controller
         $kegiatanUser = kegiatanUser::create([
             'idKegiatan'   => $request->idKegiatan, // Pastikan ini dikirim dari frontend
             'idUser'       => $request->idUser, // Pastikan ini dikirim dari frontend
-            'waktuSelesai'     => now(), // Menggunakan waktu sekarang sebagai tanggal input
+            'waktuSelesai' => now(), // Menggunakan waktu sekarang sebagai tanggal input
         ]);
 
         //return response
