@@ -117,6 +117,28 @@ class SelfAssessController extends Controller implements HasMiddleware
         return new SelfAssessmentResource(true, 'Detail Self-Assessment ditemukan', $response);
     }
 
+    public function showPertanyaan()
+    {
+        // Cari data sesi_assessment
+        $sesi = DB::table('sesi_assessment')->where('idSesiAssess', $idSesiAssess)->first();
+
+        if (!$sesi) {
+            return new SelfAssessmentResource(false, 'Data Self-Assessment tidak ditemukan', null);
+        }
+
+        // Cari data jawaban_assess
+        $jawaban = DB::table('jawaban_assess')
+            ->where('idSesiAssess', $idSesiAssess)
+            ->get();
+
+        $response = [
+            'sesi'    => $sesi,
+            'jawaban' => $jawaban,
+        ];
+
+        return new SelfAssessmentResource(true, 'Detail Self-Assessment ditemukan', $response);
+    }
+
     public function getSesiAssessSummary(Request $request)
     {
         // Validasi parameter
