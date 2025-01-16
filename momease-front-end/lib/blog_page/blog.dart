@@ -2,21 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:front_end/blog_page/models/blog_model.dart';
 import 'package:front_end/blog_page/screens/blog_detail_screen.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Blog Page',
-      home: BlogPage(),
-    );
-  }
-}
-
 class BlogPage extends StatelessWidget {
   final List<Blog> blogs = [
     Blog(
@@ -79,7 +64,8 @@ class BlogPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(10)),
                           child: Image.asset(
                             blog.imagePath,
                             fit: BoxFit.cover,
@@ -94,7 +80,8 @@ class BlogPage extends StatelessWidget {
                             children: [
                               Text(
                                 blog.title,
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               SizedBox(height: 8),
                               Text(

@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:front_end/mood_journaling.dart';
-
 import 'services/api_service.dart';
 import 'signup.dart';
-
-void main() {
-  runApp(MyApp());
-}
 
 class MyApp extends StatelessWidget {
   @override
@@ -84,16 +79,16 @@ class _LoginPageState extends State<LoginPage> {
     if (result['success']) {
       // Login berhasil
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Login berhasil'),
-            duration: Duration(seconds: 2),
-          ),
-        );
+        SnackBar(
+          content: Text('Login berhasil'),
+          duration: Duration(seconds: 2),
+        ),
+      );
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MoodJournaling()),
-        );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MoodJournaling()),
+      );
       // Lakukan navigasi atau penyimpanan token
     } else {
       // Login gagal
@@ -117,15 +112,14 @@ class _LoginPageState extends State<LoginPage> {
       decoration: InputDecoration(
         labelText: labelText,
         prefixIcon: Icon(prefixIcon),
-        suffixIcon:
-            isPassword
-                ? IconButton(
-                  icon: Icon(
-                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                  ),
-                  onPressed: togglePasswordVisibility,
-                )
-                : null,
+        suffixIcon: isPassword
+            ? IconButton(
+                icon: Icon(
+                  _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                ),
+                onPressed: togglePasswordVisibility,
+              )
+            : null,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       ),
       validator: validator,
@@ -206,26 +200,27 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 230),
               _isLoading
-                ? CircularProgressIndicator() :
-              // Tombol Login
-                ElevatedButton(
-                  onPressed: _handleLogin,
-                  child: Text(
-                    'Log in',
-                    style: TextStyle(
-                      color: Color(0xffffffff),
-                      fontWeight: FontWeight.w700,
-                      fontSize: 17,
+                  ? CircularProgressIndicator()
+                  :
+                  // Tombol Login
+                  ElevatedButton(
+                      onPressed: _handleLogin,
+                      child: Text(
+                        'Log in',
+                        style: TextStyle(
+                          color: Color(0xffffffff),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 17,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(double.infinity, 50),
+                        backgroundColor: Color(0xff6495ED),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
                     ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(double.infinity, 50),
-                    backgroundColor: Color(0xff6495ED),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
               SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
