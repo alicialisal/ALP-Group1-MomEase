@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 // import 'package:relaksasi/detail_card.dart';
 
-void main() {
-  runApp(RelaxationApp());
-}
-
 class RelaxationApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -18,7 +14,6 @@ class RelaxationApp extends StatelessWidget {
           titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ),
-      home: RelaxationScreen(),
     );
   }
 }
