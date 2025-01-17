@@ -38,7 +38,7 @@ class _RelaxationScreenState extends State<RelaxationScreen> {
       'duration': '3 minutes',
       'benefit': 'Reduce stress, calm nerves',
       'category': 'Meditation',
-      'image': 'assets/image/deep_breath.jpg',
+      'image': 'assets/images_kegiatan_relaksasi/deep_breath.jpg',
       'categoryColor': Colors.green,
     },
     {
@@ -46,7 +46,7 @@ class _RelaxationScreenState extends State<RelaxationScreen> {
       'duration': '10 minutes',
       'benefit': 'Increase focus, reduce anxiety',
       'category': 'Meditation',
-      'image': 'assets/image/meditation.jpg',
+      'image': 'assets/images_kegiatan_relaksasi/meditation.jpg',
       'categoryColor': Colors.green,
     },
     {
@@ -54,7 +54,7 @@ class _RelaxationScreenState extends State<RelaxationScreen> {
       'duration': '15 minutes',
       'benefit': 'Reduce stress, calm the mind',
       'category': 'Focus',
-      'image': 'assets/image/listening_music.jpg',
+      'image': 'assets/images_kegiatan_relaksasi/listening_music.jpg',
       'categoryColor': Colors.purple,
     },
   ];
@@ -77,19 +77,42 @@ class _RelaxationScreenState extends State<RelaxationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Text('Kegiatan Relaksasi', textAlign: TextAlign.center),
-        ),
         backgroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications_outlined),
-            onPressed: () {
-              // Aksi untuk notifikasi
-              print('Notifikasi ditekan');
-            },
-          ),
-        ],
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Container kiri kosong
+            Container(
+              width: 40, // Sesuaikan ukuran jika perlu
+              height: 40,
+              color: Colors.transparent, // Kosong tanpa icon
+            ),
+
+            // Container tengah dengan teks
+            Container(
+              child: Text(
+                'Kegiatan Relaksasi',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            // Container kanan dengan icon notifikasi
+            Container(
+              child: IconButton(
+                icon: Icon(Icons.notifications_outlined, color: Colors.black),
+                onPressed: () {
+                  // Aksi untuk notifikasi
+                  print('Notifikasi ditekan');
+                },
+              ),
+            ),
+          ],
+        ),
       ),
       body: Container(
         color: Color(0xFFffffff),
