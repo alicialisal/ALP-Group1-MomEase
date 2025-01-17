@@ -230,12 +230,15 @@ class RelaxationCard extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 4.0),
-                    Text(
-                      duration,
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.grey.shade700,
-                      ),
+                    Row(
+                      children: [
+                        Icon(Icons.access_time, size: 16.0, color: Colors.grey),
+                        SizedBox(width: 4.0), // Spasi antara icon dan text
+                        Text(
+                          duration,
+                          style: TextStyle(fontSize: 14.0, color: Colors.grey),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 8.0),
                     Text(benefit, style: TextStyle(fontSize: 14.0)),
