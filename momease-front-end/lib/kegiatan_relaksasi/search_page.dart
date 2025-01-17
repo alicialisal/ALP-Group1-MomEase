@@ -77,13 +77,6 @@ class _RelaxationScreenState extends State<RelaxationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            // Aksi kembali
-            Navigator.pop(context);
-          },
-        ),
         title: Center(
           child: Text('Kegiatan Relaksasi', textAlign: TextAlign.center),
         ),
