@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// import 'package:relaksasi/detail_card.dart';
+import 'package:front_end/kegiatan_relaksasi/detail_card.dart';
 
 class RelaxationApp extends StatelessWidget {
   @override
@@ -198,22 +198,22 @@ class RelaxationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      // onTap: () {
-      //   Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //       builder: (context) => DetailScreen(
-      //         title: title,
-      //         duration: duration,
-      //         benefit: benefit,
-      //         category: category,
-      //         image: image,
-      //         categoryColor: categoryColor,
-      //         description: description,
-      //       ),
-      //     ),
-      //   );
-      // },
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailScreen(
+              title: title,
+              duration: duration,
+              benefit: benefit,
+              category: category,
+              image: image,
+              categoryColor: categoryColor,
+              description: description,
+            ),
+          ),
+        );
+      },
       child: Card(
         color: Color(0xffffffff),
         margin: EdgeInsets.only(bottom: 16.0, top: 16.0),
