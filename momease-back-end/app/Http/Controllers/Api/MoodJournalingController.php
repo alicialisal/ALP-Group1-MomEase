@@ -60,7 +60,7 @@ class MoodJournalingController extends Controller implements HasMiddleware
     {
         //define validation rules
         $validator = Validator::make($request->all(), [
-            'idJournaling' => 'required|string|max:15', // ID jurnal harus berupa string dengan panjang maksimal 15
+            // 'idJournaling' => 'required|string|max:15', // ID jurnal harus berupa string dengan panjang maksimal 15
             'idUser'       => 'required|exists:users,idUser', // ID user harus ada di tabel `users`
             'tglInput'     => 'required|date', // Tanggal input harus berupa tanggal yang valid
             'mood'         => 'required|integer|min:1|max:5', // Mood harus berupa angka (1-5)
@@ -82,7 +82,7 @@ class MoodJournalingController extends Controller implements HasMiddleware
         $moodJournaling = MoodJournaling::create([
             'idJournaling' => $this->generateIdJournaling($request->idUser),
             'idUser'       => $request->idUser, // Pastikan ini dikirim dari frontend
-            'tglInput'     => now(), // Menggunakan waktu sekarang sebagai tanggal input
+            'tglInput'     => $request->tglInput, // Menggunakan waktu sekarang sebagai tanggal input
             'mood'         => $request->mood, // Data mood dari input
             'perasaan'     => json_encode($request->perasaan), // Pastikan `perasaan` berupa array atau JSON
             'kondisiBayi'  => json_encode($request->kondisiBayi), // Pastikan `kondisiBayi` berupa array atau JSON
