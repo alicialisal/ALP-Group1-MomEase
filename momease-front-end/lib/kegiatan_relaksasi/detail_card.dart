@@ -158,8 +158,17 @@ class DetailScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          TimerActivityPage(duration: duration),
+                      builder: (context) => RelaxationTimerPage(
+                        activity: {
+                          'title': title,
+                          'duration': duration,
+                          'benefit': benefit,
+                          'category': category,
+                          'image': image,
+                          'categoryColor': categoryColor,
+                          'description': description,
+                        },
+                      ),
                     ),
                   );
                 },
