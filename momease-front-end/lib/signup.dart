@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'login.dart';
@@ -53,6 +55,10 @@ class _SignUpPageState extends State<SignUpPage> {
       'email': _emailController.text,
     };
 
+    final jsonString = jsonEncode(userData);
+
+    print('JSON Format: $jsonString');
+
     final result = await _apiService.register(userData);
 
     setState(() {
@@ -62,16 +68,16 @@ class _SignUpPageState extends State<SignUpPage> {
     if (result['success']) {
       // Registrasi berhasil
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Sign Up berhasil'),
-            duration: Duration(seconds: 2),
-          ),
-        );
+        SnackBar(
+          content: Text('Sign Up berhasil'),
+          duration: Duration(seconds: 2),
+        ),
+      );
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-        ); // Kembali ke halaman login
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      ); // Kembali ke halaman login
     } else {
       // Registrasi gagal
       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:front_end/chatbot.dart';
+import 'package:front_end/edit_profile.dart';
 import 'package:front_end/kegiatan_relaksasi.dart';
 import 'package:front_end/mood_journaling.dart';
-import 'package:front_end/profile.dart';
 
 class ResultPage extends StatelessWidget {
   final List<String?> userAnswers;
@@ -70,7 +70,7 @@ class ResultPage extends StatelessWidget {
               // Navigasi ke halaman profil
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ProfilePage()),
+                MaterialPageRoute(builder: (context) => ProfileView()),
               );
             },
             child: Row(

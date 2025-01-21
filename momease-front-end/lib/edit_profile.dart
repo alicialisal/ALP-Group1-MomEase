@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(MyApp());
-}
+import 'package:front_end/custom_navbar.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -12,7 +9,6 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ProfileView(),
     );
   }
 }
@@ -93,6 +89,12 @@ class _ProfileViewState extends State<ProfileView> {
           ],
         ),
       ),
+      bottomNavigationBar: CustomFloatingNavBar(
+        selectedIndex: 4,
+        onItemTapped: (index) {
+          // Handle navigation based on the selected index
+        },
+      ),
     );
   }
 }
@@ -117,13 +119,16 @@ class AccountSection extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 30,
-                backgroundImage: NetworkImage('https://via.placeholder.com/150'), // Placeholder image
+                backgroundImage: NetworkImage(
+                    'https://via.placeholder.com/150'), // Placeholder image
               ),
               SizedBox(width: 16),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(user.firstName, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text(user.firstName,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   Text('Joined in 2024'),
                 ],
               ),
@@ -148,7 +153,8 @@ class RecordsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("My Records", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text("My Records",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -198,7 +204,9 @@ class RecordCard extends StatelessWidget {
                 children: [
                   Text(label, style: TextStyle(fontSize: 16)),
                   SizedBox(height: 4),
-                  Text(value, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  Text(value,
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                 ],
               ),
             ],
@@ -395,8 +403,6 @@ class MoodLine extends StatelessWidget {
   }
 }
 
-
-
 class MoodBarSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -407,7 +413,11 @@ class MoodBarSection extends StatelessWidget {
     double happyPercentage = 0.15;
     double excitedPercentage = 0.30;
 
-    double totalMood = angryPercentage + sadPercentage + neutralPercentage + happyPercentage + excitedPercentage;
+    double totalMood = angryPercentage +
+        sadPercentage +
+        neutralPercentage +
+        happyPercentage +
+        excitedPercentage;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -521,7 +531,8 @@ class EditProfileView extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, {bool obscureText = false}) {
+  Widget _buildTextField(TextEditingController controller, String label,
+      {bool obscureText = false}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -548,7 +559,8 @@ class ProfilePicture extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 50,
-            backgroundImage: NetworkImage('https://via.placeholder.com/150'), // Placeholder image
+            backgroundImage: NetworkImage(
+                'https://via.placeholder.com/150'), // Placeholder image
           ),
           TextButton(
             onPressed: () {
@@ -561,4 +573,3 @@ class ProfilePicture extends StatelessWidget {
     );
   }
 }
-
