@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:front_end/blog_page/blog.dart';
-import 'package:front_end/chatbot.dart';
-import 'package:front_end/edit_profile.dart';
+import 'package:front_end/chatbot/chatbot.dart';
+import 'package:front_end/mood_journaling/mood_journaling.dart';
+import 'package:front_end/profile/profile.dart';
 import 'package:front_end/kegiatan_relaksasi/search_page.dart';
-import 'package:front_end/mood_journaling.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'splash_screen.dart';
 
 void main() {
@@ -35,9 +34,9 @@ class MyApp extends StatelessWidget {
             '/': (context) => SplashScreen(),
             '/chatbot': (context) => ChatBotPage(),
             '/relaxation': (context) => RelaxationApp(),
-            '/mood_journaling': (context) => MoodJournaling(),
+            '/mood_journaling': (context) => MoodTrackerScreen(),
             '/blogs': (context) => BlogPage(),
-            '/profile': (context) => ProfileView(),
+            '/profile': (context) => ProfilePage(),
           },
         );
       },

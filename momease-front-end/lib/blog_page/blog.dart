@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:front_end/blog_page/models/blog_model.dart';
 import 'package:front_end/blog_page/screens/blog_detail_screen.dart';
-import 'package:front_end/custom_navbar.dart';
+import 'package:front_end/navbar/custom_navbar.dart';
 
 class BlogPage extends StatelessWidget {
   final List<Blog> blogs = [

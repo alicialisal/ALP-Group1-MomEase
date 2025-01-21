@@ -44,7 +44,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     'Confide your feelings with us.',
     'Get inspired with parenting knowledge.',
     'Calm and stabilize your mood with us.',
-    'Calm and stabilize your mood with us.',
+    'Test your inner feeling',
   ];
 
   // Fungsi untuk berpindah halaman ke halaman selanjutnya
@@ -123,23 +123,23 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Column(
                         children: [
-                          // Deskripsi tambahan
+                          // Judul
                           Text(
                             _additionalDescriptions[index],
                             style: TextStyle(
                               fontSize: 18,
-                              fontWeight: FontWeight.w900,
+                              fontWeight: FontWeight.w600,
                               color: Color(0xff324D81),
                             ),
                             textAlign: TextAlign.center,
                           ),
                           SizedBox(height: 8),
-                          // Deskripsi utama
+                          // Deskrips7
                           Text(
                             _descriptions[index],
                             style: TextStyle(
                               fontSize: 15,
-                              fontWeight: FontWeight.w800,
+                              fontWeight: FontWeight.w600,
                               color: Color(0xff657AA1),
                             ),
                             textAlign: TextAlign.center,
@@ -194,7 +194,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         'Next',
                         style: TextStyle(
                           color: Color(0xffffffff),
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w700,
                           fontSize: 17,
                         ),
                       ),
@@ -217,7 +217,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         'Skip',
                         style: TextStyle(
                           color: Color(0xff324D81),
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w700,
                           fontSize: 17,
                         ),
                       ),

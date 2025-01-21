@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:front_end/notification.dart';
+import 'package:front_end/notification/notification.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
@@ -101,20 +101,19 @@ class DetailPage extends StatelessWidget {
             Wrap(
               spacing: 8.0,
               runSpacing: 8.0,
-              children:
-                  (moodDetails['userMood'] as List).map<Widget>((mood) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Color(0xff74B6F2), width: 1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      child: Text(mood, style: GoogleFonts.poppins()),
-                    );
-                  }).toList(),
+              children: (moodDetails['userMood'] as List).map<Widget>((mood) {
+                return Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Color(0xff74B6F2), width: 1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  child: Text(mood, style: GoogleFonts.poppins()),
+                );
+              }).toList(),
             ),
             SizedBox(height: 20),
             Text(
@@ -129,20 +128,19 @@ class DetailPage extends StatelessWidget {
             Wrap(
               spacing: 8.0,
               runSpacing: 8.0,
-              children:
-                  (moodDetails['babyMood'] as List).map<Widget>((mood) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Color(0xffFFBCD9), width: 1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      child: Text(mood, style: GoogleFonts.poppins()),
-                    );
-                  }).toList(),
+              children: (moodDetails['babyMood'] as List).map<Widget>((mood) {
+                return Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Color(0xffFFBCD9), width: 1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  child: Text(mood, style: GoogleFonts.poppins()),
+                );
+              }).toList(),
             ),
             SizedBox(height: 20),
             Text(
@@ -159,7 +157,6 @@ class DetailPage extends StatelessWidget {
               style: GoogleFonts.poppins(fontSize: 16),
             ),
             SizedBox(height: 20),
-
             Text(
               "Photos:",
               style: GoogleFonts.poppins(
