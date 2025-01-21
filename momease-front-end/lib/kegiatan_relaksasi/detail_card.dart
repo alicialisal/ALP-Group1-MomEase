@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:front_end/kegiatan_relaksasi/timer_activity_page.dart';
+import 'dart:ui';
 
 class DetailScreen extends StatelessWidget {
   final String title;
@@ -155,21 +156,87 @@ class DetailScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RelaxationTimerPage(
-                        activity: {
-                          'title': title,
-                          'duration': duration,
-                          'benefit': benefit,
-                          'category': category,
-                          'image': image,
-                          'categoryColor': categoryColor,
-                          'description': description,
-                        },
-                      ),
-                    ),
+                  showDialog(
+                    context: context,
+                    barrierDismissible:
+                        true, // Modal bisa ditutup dengan klik di luar
+                    builder: (BuildContext context) {
+                      return BackdropFilter(
+                        filter: ImageFilter.blur(
+                          sigmaX: 5,
+                          sigmaY: 5,
+                        ), // Blur background
+                        child: AlertDialog(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          contentPadding: EdgeInsets.all(
+                            16.0,
+                          ), // Atur padding konten
+                          content: Column(
+                            mainAxisSize:
+                                MainAxisSize.min, // Minimal tinggi konten
+                            crossAxisAlignment:
+                                CrossAxisAlignment.center, // Isi center
+                            children: [
+                              Text(
+                                'Are you ready?',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 27,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 16.0),
+                              Text(
+                                'Timer will be start when you click start button',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF808080),
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 24.0),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context); // Tutup modal
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => RelaxationTimerPage(
+                                        activity: {
+                                          'title': title,
+                                          'duration': duration,
+                                          'benefit': benefit,
+                                          'category': category,
+                                          'image': image,
+                                          'categoryColor': categoryColor,
+                                          'description': description,
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  foregroundColor: Colors.white,
+                                  minimumSize: Size(double.infinity, 45),
+                                ),
+                                child: Text(
+                                  'Start!',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
                 child: Text(
