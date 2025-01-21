@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:front_end/blog_page/blog.dart';
-import 'package:front_end/chatbot.dart';
-import 'package:front_end/edit_profile.dart';
+import 'package:front_end/chatbot/chatbot.dart';
+import 'package:front_end/profile/edit_profile.dart';
 import 'package:front_end/kegiatan_relaksasi/search_page.dart';
-import 'package:front_end/mood_journaling.dart';
+import 'package:front_end/mood_journaling/mood_journaling.dart';
 
 class CustomFloatingNavBar extends StatelessWidget {
   final int selectedIndex;

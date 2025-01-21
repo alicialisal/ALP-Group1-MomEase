@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:front_end/custom_navbar.dart';
+import 'package:front_end/navbar/custom_navbar.dart';
 
 class MyApp extends StatelessWidget {
   @override

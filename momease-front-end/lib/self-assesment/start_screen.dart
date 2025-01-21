@@ -1,21 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:front_end/self-assesment/mental_health_quiz.dart';
 
-void main() => runApp(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          fontFamily: 'Poppins',
-          textTheme: TextTheme(
-            bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-            bodyMedium: TextStyle(fontSize: 14),
-            titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-        home: StartScreen(),
-      ),
-    );
-
 class StartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:front_end/chatbot.dart';
-import 'package:front_end/edit_profile.dart';
-import 'package:front_end/kegiatan_relaksasi.dart';
-import 'package:front_end/mood_journaling.dart';
+import 'package:front_end/chatbot/chatbot.dart';
+import 'package:front_end/profile/edit_profile.dart';
+import 'package:front_end/kegiatan_relaksasi/search_page.dart';
+import 'package:front_end/mood_journaling/mood_journaling.dart';
 
 class ResultPage extends StatelessWidget {
   final List<String?> userAnswers;
@@ -154,7 +154,7 @@ class ResultPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => KegiatanRelaksasi(),
+                            builder: (context) => RelaxationScreen(),
                           ),
                         );
                       },
@@ -203,7 +203,7 @@ class ResultPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => MoodJournaling()),
+                              builder: (context) => MoodTrackerScreen()),
                         );
                       },
                       style: ElevatedButton.styleFrom(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:front_end/custom_navbar.dart';
+import 'package:front_end/navbar/custom_navbar.dart';
 import 'package:front_end/kegiatan_relaksasi/detail_card.dart';
 
 class RelaxationApp extends StatelessWidget {
@@ -82,102 +82,107 @@ class _RelaxationScreenState extends State<RelaxationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Container kiri kosong
-            Container(
-              width: 40, // Sesuaikan ukuran jika perlu
-              height: 40,
-              color: Colors.transparent, // Kosong tanpa icon
-            ),
-
-            // Container tengah dengan teks
-            Container(
-              child: Text(
-                'Kegiatan Relaksasi',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-
-            // Container kanan dengan icon notifikasi
-            Container(
-              child: IconButton(
-                icon: Icon(Icons.notifications_outlined, color: Colors.black),
-                onPressed: () {
-                  // Aksi untuk notifikasi
-                  print('Notifikasi ditekan');
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-      body: Container(
-        color: Color(0xFFffffff),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Search TextField
-              TextField(
-                onChanged: (value) {
-                  setState(() {
-                    searchQuery = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: 'Search activities...',
-                  prefixIcon: Icon(Icons.search),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.filter_list),
-                    onPressed: _showFilterModal,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30.0),
+              // Container kiri kosong
+              Container(
+                width: 40, // Sesuaikan ukuran jika perlu
+                height: 40,
+                color: Colors.transparent, // Kosong tanpa icon
+              ),
+
+              // Container tengah dengan teks
+              Container(
+                child: Text(
+                  'Kegiatan Relaksasi',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              SizedBox(height: 16.0),
-              // List of Cards
-              Expanded(
-                child: Container(
-                  color: Colors.white,
-                  child: ListView.builder(
-                    itemCount: filteredActivities.length,
-                    itemBuilder: (context, index) {
-                      final activity = filteredActivities[index];
-                      return RelaxationCard(
-                        title: activity['title'],
-                        duration: activity['duration'],
-                        benefit: activity['benefit'],
-                        category: activity['category'],
-                        image: activity['image'],
-                        categoryColor: activity['categoryColor'],
-                        description: activity['description'],
-                      );
-                    },
-                  ),
+
+              // Container kanan dengan icon notifikasi
+              Container(
+                child: IconButton(
+                  icon: Icon(Icons.notifications_outlined, color: Colors.black),
+                  onPressed: () {
+                    // Aksi untuk notifikasi
+                    print('Notifikasi ditekan');
+                  },
                 ),
               ),
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: CustomFloatingNavBar(
-        selectedIndex: 1,
-        onItemTapped: (index) {
-          // Handle navigation based on the selected index
-        },
+        body: Container(
+          color: Color(0xFFffffff),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Search TextField
+                TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      searchQuery = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Search activities...',
+                    prefixIcon: Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.filter_list),
+                      onPressed: _showFilterModal,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                // List of Cards
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                    child: ListView.builder(
+                      itemCount: filteredActivities.length,
+                      itemBuilder: (context, index) {
+                        final activity = filteredActivities[index];
+                        return RelaxationCard(
+                          title: activity['title'],
+                          duration: activity['duration'],
+                          benefit: activity['benefit'],
+                          category: activity['category'],
+                          image: activity['image'],
+                          categoryColor: activity['categoryColor'],
+                          description: activity['description'],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        bottomNavigationBar: CustomFloatingNavBar(
+          selectedIndex: 1,
+          onItemTapped: (index) {
+            // Handle navigation based on the selected index
+          },
+        ),
       ),
     );
   }
