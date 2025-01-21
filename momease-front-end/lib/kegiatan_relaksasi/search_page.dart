@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:front_end/custom_navbar.dart';
 import 'package:front_end/kegiatan_relaksasi/detail_card.dart';
 
 class RelaxationApp extends StatelessWidget {
@@ -171,6 +172,12 @@ class _RelaxationScreenState extends State<RelaxationScreen> {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: CustomFloatingNavBar(
+        selectedIndex: 1,
+        onItemTapped: (index) {
+          // Handle navigation based on the selected index
+        },
       ),
     );
   }

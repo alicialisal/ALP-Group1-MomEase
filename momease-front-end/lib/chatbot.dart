@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:front_end/custom_navbar.dart';
 
 class ChatBotPage extends StatelessWidget {
   @override
@@ -19,6 +20,12 @@ class ChatBotPage extends StatelessWidget {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: CustomFloatingNavBar(
+        selectedIndex: 0,
+        onItemTapped: (index) {
+          // Handle navigation based on the selected index
+        },
       ),
     );
   }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:front_end/blogs.dart';
+import 'package:front_end/blog_page/blog.dart';
 import 'package:front_end/chatbot.dart';
+import 'package:front_end/edit_profile.dart';
+import 'package:front_end/kegiatan_relaksasi/search_page.dart';
 import 'package:front_end/mood_journaling.dart';
-import 'package:front_end/profile.dart';
-import 'package:front_end/relaxation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'splash_screen.dart';
 
@@ -22,9 +22,11 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(
           theme: ThemeData(
-            // Menggunakan font Poppins di seluruh aplikasi
-            textTheme: GoogleFonts.poppinsTextTheme(
-              Theme.of(context).textTheme,
+            fontFamily: 'Poppins',
+            textTheme: TextTheme(
+              bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+              bodyMedium: TextStyle(fontSize: 14),
+              titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           debugShowCheckedModeBanner: false,
@@ -32,10 +34,10 @@ class MyApp extends StatelessWidget {
           routes: {
             '/': (context) => SplashScreen(),
             '/chatbot': (context) => ChatBotPage(),
-            '/relaxation': (context) => RelaxationPage(),
+            '/relaxation': (context) => RelaxationApp(),
             '/mood_journaling': (context) => MoodJournaling(),
-            '/blogs': (context) => BlogsPage(),
-            '/profile': (context) => ProfilePage(),
+            '/blogs': (context) => BlogPage(),
+            '/profile': (context) => ProfileView(),
           },
         );
       },
