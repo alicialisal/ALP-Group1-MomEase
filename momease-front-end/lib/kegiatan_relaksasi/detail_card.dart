@@ -151,7 +151,6 @@ class DetailScreen extends StatelessWidget {
               ),
             ),
 
-            // Spacer agar tombol berada di bawah layar
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(

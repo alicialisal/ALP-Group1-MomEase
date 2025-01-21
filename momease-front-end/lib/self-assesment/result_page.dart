@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:front_end/chatbot/chatbot.dart';
-import 'package:front_end/profile/edit_profile.dart';
+import 'package:front_end/profile/profile.dart';
 import 'package:front_end/kegiatan_relaksasi/search_page.dart';
 import 'package:front_end/mood_journaling/mood_journaling.dart';
 
@@ -70,7 +70,7 @@ class ResultPage extends StatelessWidget {
               // Navigasi ke halaman profil
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ProfileView()),
+                MaterialPageRoute(builder: (context) => ProfilePage()),
               );
             },
             child: Row(

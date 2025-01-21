@@ -74,7 +74,7 @@ class _HistoryPageState extends State<HistoryPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Mood History',
+          'History',
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold, // Ubah judul jadi bold
           ),
