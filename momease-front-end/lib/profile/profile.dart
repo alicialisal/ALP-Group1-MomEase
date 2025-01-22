@@ -65,8 +65,8 @@ class ProfilePage extends StatelessWidget {
                                 // Gambar berbentuk lingkaran
                                 CircleAvatar(
                                   radius: 30.0,
-                                  backgroundImage: AssetImage(
-                                      'assets/image_profile/michie.png'),
+                                  // backgroundImage: AssetImage(
+                                  //     'assets/image_profile/michie.png'),
                                 ),
                                 SizedBox(width: 15.0),
                                 // Nama user

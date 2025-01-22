@@ -56,10 +56,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   onTap: _pickImage, // Memilih gambar saat gambar ditekan
                   child: CircleAvatar(
                     radius: 50.0,
-                    backgroundImage: _image != null
-                        ? FileImage(_image!)
-                        : AssetImage('assets/image_profile/michie.png')
-                            as ImageProvider,
+                    // backgroundImage: _image != null
+                    //     ? FileImage(_image!)
+                    //     : AssetImage('assets/image_profile/michie.png')
+                    //         as ImageProvider,
                     child: _image == null
                         ? Icon(Icons.camera_alt,
                             color: Colors

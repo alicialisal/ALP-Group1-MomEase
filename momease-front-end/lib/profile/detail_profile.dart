@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:front_end/profile/edit_profile.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences.dart'; // Add this package to pubspec.yaml
 
 class DetailProfilePage extends StatefulWidget {
   @override
@@ -7,112 +9,176 @@ class DetailProfilePage extends StatefulWidget {
 }
 
 class _DetailProfilePageState extends State<DetailProfilePage> {
-  // Inisialisasi TextEditingController dengan data default
-  final TextEditingController firstNameController =
-      TextEditingController(text: 'Michie');
-  final TextEditingController lastNameController =
-      TextEditingController(text: 'Tanaka');
-  final TextEditingController birthdateController =
-      TextEditingController(text: '1990-01-01');
-  final TextEditingController emailController =
-      TextEditingController(text: 'michie@example.com');
+  final TextEditingController namaDpnController = TextEditingController();
+  final TextEditingController namaBlkgController = TextEditingController();
+  final TextEditingController tglLahirController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  
+  bool isLoading = true;
+  String? error;
 
-  bool isEditMode = false; // Variabel untuk mengontrol mode edit
+  @override
+  void initState() {
+    super.initState();
+    fetchUserProfile();
+  }
+
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');
+  }
+
+  Future<void> fetchUserProfile() async {
+    setState(() {
+      isLoading = true;
+      error = null;
+    });
+
+    try {
+      final token = await getToken();
+      if (token == null) {
+        throw Exception('No authentication token found');
+      }
+
+      final response = await http.get(
+        Uri.parse('http://127.0.0.1:8000/api/user'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        final userData = responseData['data'];
+        
+        setState(() {
+          namaDpnController.text = userData['namaDpn'] ?? '';
+          namaBlkgController.text = userData['namaBlkg'] ?? '';
+          tglLahirController.text = userData['tglLahir'] ?? '';
+          emailController.text = userData['email'] ?? '';
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          error = 'Failed to load profile data: ${response.statusCode}';
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        error = e.toString();
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detail Profile'),
+        title: Text('Profile'),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(isEditMode ? Icons.save : Icons.edit),
-            onPressed: () {
-              setState(() {
-                isEditMode = !isEditMode; // Toggle mode edit
-              });
-            },
-          ),
-        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // Memusatkan elemen
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Gambar profil
-            CircleAvatar(
-              radius: 50.0,
-              backgroundImage: AssetImage(
-                  'assets/image_profile/michie.png'), // Path gambar Anda
-            ),
-            SizedBox(height: 20.0),
-
-            // Kolom first name
-            TextField(
-              controller: firstNameController,
-              readOnly: !isEditMode, // Hanya dapat diubah pada mode edit
-              decoration: InputDecoration(
-                labelText: 'First Name',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 12.0),
-
-            // Kolom last name
-            TextField(
-              controller: lastNameController,
-              readOnly: !isEditMode,
-              decoration: InputDecoration(
-                labelText: 'Last Name',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 12.0),
-
-            // Kolom birthdate
-            TextField(
-              controller: birthdateController,
-              readOnly: !isEditMode,
-              decoration: InputDecoration(
-                labelText: 'Birthdate',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 12.0),
-
-            // Kolom email
-            TextField(
-              controller: emailController,
-              readOnly: !isEditMode,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 20.0),
-
-            // Tombol untuk halaman Edit Profile
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => EditProfilePage()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
-                backgroundColor: Color(0xff97CBFB),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+      body: isLoading 
+          ? Center(child: CircularProgressIndicator())
+          : error != null
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Error loading profile',
+                        style: TextStyle(color: Colors.red, fontSize: 16),
+                      ),
+                      SizedBox(height: 8),
+                      TextButton(
+                        onPressed: fetchUserProfile,
+                        child: Text('Retry'),
+                      ),
+                    ],
+                  ),
+                )
+              : SingleChildScrollView(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 50.0,
+                        backgroundColor: Colors.grey[200],
+                        child: Icon(Icons.person, size: 50, color: Colors.grey[400]),
+                      ),
+                      SizedBox(height: 24.0),
+                      
+                      ProfileInfoField(
+                        controller: namaDpnController,
+                        label: 'Nama Depan',
+                        readOnly: true,
+                      ),
+                      SizedBox(height: 16.0),
+                      
+                      ProfileInfoField(
+                        controller: namaBlkgController,
+                        label: 'Nama Belakang',
+                        readOnly: true,
+                      ),
+                      SizedBox(height: 16.0),
+                      
+                      ProfileInfoField(
+                        controller: tglLahirController,
+                        label: 'Tanggal Lahir',
+                        readOnly: true,
+                      ),
+                      SizedBox(height: 16.0),
+                      
+                      ProfileInfoField(
+                        controller: emailController,
+                        label: 'Email',
+                        readOnly: true,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              child: Text('Edit Profile', style: TextStyle(fontSize: 16.0)),
-            ),
-          ],
+    );
+  }
+
+  @override
+  void dispose() {
+    namaDpnController.dispose();
+    namaBlkgController.dispose();
+    tglLahirController.dispose();
+    emailController.dispose();
+    super.dispose();
+  }
+}
+
+class ProfileInfoField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final bool readOnly;
+
+  const ProfileInfoField({
+    required this.controller,
+    required this.label,
+    this.readOnly = false,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      readOnly: readOnly,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
         ),
+        filled: readOnly,
+        fillColor: Colors.grey[100],
       ),
     );
   }

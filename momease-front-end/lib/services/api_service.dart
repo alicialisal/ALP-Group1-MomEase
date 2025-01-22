@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 class ApiService {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: 'http://127.0.0.1:8000/api', // Ganti dengan URL backend Anda
+      baseUrl: 'http://192.168.60.107:8000/api', // Ganti dengan URL backend Anda
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {
