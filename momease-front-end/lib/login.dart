@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:front_end/mood_journaling/mood_journaling.dart';
+import 'package:front_end/mood_journaling.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'services/api_service.dart';
 import 'signup.dart';
 
@@ -62,41 +64,54 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _handleLogin() async {
-    setState(() {
-      _isLoading = true;
-    });
+  Future<void> _saveUserID(int idUser, String bearerToken) async {
+    final prefs = await SharedPreferences.getInstance();
 
-    final result = await _apiService.login(
-      _emailController.text,
-      _passwordController.text,
-    );
+    // Encode _moodData menjadi JSON dengan key DateTime yang diubah ke string
+    prefs.setInt(
+      'idUser', idUser);
 
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (result['success']) {
-      // Login berhasil
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Login berhasil'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => MoodTrackerScreen()),
-      );
-      // Lakukan navigasi atau penyimpanan token
-    } else {
-      // Login gagal
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(result['message'] ?? 'Login failed')),
-      );
-    }
+    prefs.setString(
+      'token', bearerToken);
   }
+
+    Future<void> _handleLogin() async {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final result = await _apiService.login(
+        _emailController.text,
+        _passwordController.text,
+      );
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (result['success']) {
+        // Login berhasil
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Login berhasil'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        _saveUserID(result['user']['idUser'], result['token']);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MoodJournaling()),
+        );
+        // Lakukan navigasi atau penyimpanan token
+      } else {
+        // Login gagal
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result['message'] ?? 'Login failed')),
+        );
+      }
+    }
 
   Widget _buildInputField({
     required TextEditingController controller,
@@ -136,8 +151,10 @@ class _LoginPageState extends State<LoginPage> {
           key: _formKey,
           child: ListView(
             children: <Widget>[
-              Align(
-                alignment: Alignment.topCenter,
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 30.0,
+                ), // Menambahkan jarak atas
                 child: Image.asset('assets/logo.png', height: 76),
               ),
               SizedBox(height: 45),
