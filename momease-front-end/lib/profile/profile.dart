@@ -66,7 +66,7 @@ class ProfilePage extends StatelessWidget {
                                 CircleAvatar(
                                   radius: 30.0,
                                   backgroundImage: AssetImage(
-                                      'assets/image_profile/michie.png'),
+                                      'assets/images/image_profile/michie.png'),
                                 ),
                                 SizedBox(width: 15.0),
                                 // Nama user
@@ -124,7 +124,7 @@ class ProfilePage extends StatelessWidget {
                             ),
                             // Gambar
                             Image.asset(
-                              'assets/self_asses.png',
+                              'assets/images/self_asses.png',
                               width: 80.0,
                               height: 80.0,
                             ),
