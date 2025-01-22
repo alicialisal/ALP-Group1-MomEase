@@ -4,47 +4,77 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
+    public function show(Request $request)
+    {
+        try {
+            // Ambil user yang sedang login
+            $user = $request->user();
+
+            // Pastikan user ada
+            if (!$user) {
+                return response()->json([
+                    'message' => 'User not found.',
+                ], 404);
+            }
+
+            // Kembalikan data profile
+            return response()->json([
+                'message' => 'Profile retrieved successfully',
+                'profile' => [
+                    'namaDpn' => $user->namaDpn,
+                    'namaBlkg' => $user->namaBlkg,
+                    'tglLahir' => $user->tglLahir,
+                    'email' => $user->email,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to retrieve profile',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
     public function update(Request $request)
     {
-        // Validasi input
-        $validator = Validator::make($request->all(), [
-            'idUser' => 'required|exists:users,id',
-            'namaDpn' => 'required|string|max:255',
-            'namaBlkg' => 'nullable|string|max:255',
-            'tglLahir' => 'required|date|before:today',
-        ]);
-
-        // Jika validasi gagal
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
         try {
-            // Cari user berdasarkan idUser
-            $user = User::findOrFail($request->idUser);
+            $user = $request->user();
+
+            if (!$user) {
+                return response()->json([
+                    'message' => 'User not found.',
+                ], 404);
+            }
+
+            // Validasi input (tambahkan validasi lain jika perlu)
+            $request->validate([
+                'namaDpn' => 'required|string|max:255',
+                'namaBlkg' => 'nullable|string|max:255',
+                'tglLahir' => 'required|date',
+                'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
+            ]);
 
             // Update data user
-            $user->update([
-                'namaDpn' => $request->namaDpn,
-                'namaBlkg' => $request->namaBlkg,
-                'tglLahir' => $request->tglLahir,
-            ]);
+            $user->namaDpn = $request->namaDpn;
+            $user->namaBlkg = $request->namaBlkg;
+            $user->tglLahir = $request->tglLahir;
+            $user->email = $request->email;
 
-            // Kembalikan response sukses
             return response()->json([
                 'message' => 'Profile updated successfully',
-                'profile' => $user,
+                'profile' => [
+                    'namaDpn' => $user->namaDpn,
+                    'namaBlkg' => $user->namaBlkg,
+                    'tglLahir' => $user->tglLahir,
+                    'email' => $user->email,
+                ],
             ]);
         } catch (\Exception $e) {
-            // Jika ada error
             return response()->json([
                 'message' => 'Failed to update profile',
                 'error' => $e->getMessage(),

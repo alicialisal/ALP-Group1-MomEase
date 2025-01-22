@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart'; // Add this package to pubspec.yaml
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:front_end/profile/edit_profile.dart';
 
 class DetailProfilePage extends StatefulWidget {
   @override
@@ -9,11 +10,11 @@ class DetailProfilePage extends StatefulWidget {
 }
 
 class _DetailProfilePageState extends State<DetailProfilePage> {
-  final TextEditingController namaDpnController = TextEditingController();
-  final TextEditingController namaBlkgController = TextEditingController();
-  final TextEditingController tglLahirController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  
+  String firstName = '';
+  String lastName = '';
+  String birthdate = '';
+  String email = '';
+
   bool isLoading = true;
   String? error;
 
@@ -41,7 +42,7 @@ class _DetailProfilePageState extends State<DetailProfilePage> {
       }
 
       final response = await http.get(
-        Uri.parse('http://127.0.0.1:8000/api/user'),
+        Uri.parse('http://127.0.0.1:8000/api/profile/show'),
         headers: {
           'Authorization': 'Bearer $token',
           'Accept': 'application/json',
@@ -50,13 +51,11 @@ class _DetailProfilePageState extends State<DetailProfilePage> {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        final userData = responseData['data'];
-        
+        print('API Response: $responseData');
+        success(responseData);
+      } else if (response.statusCode == 401) {
         setState(() {
-          namaDpnController.text = userData['namaDpn'] ?? '';
-          namaBlkgController.text = userData['namaBlkg'] ?? '';
-          tglLahirController.text = userData['tglLahir'] ?? '';
-          emailController.text = userData['email'] ?? '';
+          error = 'Unauthorized: Please login again.';
           isLoading = false;
         });
       } else {
@@ -76,14 +75,26 @@ class _DetailProfilePageState extends State<DetailProfilePage> {
     }
   }
 
-  @override
+  void success(Map<String, dynamic> responseData) {
+    final userData = responseData['profile'];
+
+    setState(() {
+      firstName = userData['namaDpn'] ?? '';
+      lastName = userData['namaBlkg'] ?? '';
+      birthdate = userData['tglLahir'] ?? '';
+      email = userData['email'] ?? '';
+      isLoading = false;
+    });
+  }
+
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: Text('Detail Profile'),
         centerTitle: true,
       ),
-      body: isLoading 
+      body: isLoading
           ? Center(child: CircularProgressIndicator())
           : error != null
               ? Center(
@@ -91,7 +102,7 @@ class _DetailProfilePageState extends State<DetailProfilePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Error loading profile',
+                        error!,
                         style: TextStyle(color: Colors.red, fontSize: 16),
                       ),
                       SizedBox(height: 8),
@@ -102,84 +113,55 @@ class _DetailProfilePageState extends State<DetailProfilePage> {
                     ],
                   ),
                 )
-              : SingleChildScrollView(
-                  padding: EdgeInsets.all(16.0),
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CircleAvatar(
-                        radius: 50.0,
-                        backgroundColor: Colors.grey[200],
-                        child: Icon(Icons.person, size: 50, color: Colors.grey[400]),
+                      Center(
                       ),
-                      SizedBox(height: 24.0),
-                      
-                      ProfileInfoField(
-                        controller: namaDpnController,
-                        label: 'Nama Depan',
-                        readOnly: true,
-                      ),
-                      SizedBox(height: 16.0),
-                      
-                      ProfileInfoField(
-                        controller: namaBlkgController,
-                        label: 'Nama Belakang',
-                        readOnly: true,
-                      ),
-                      SizedBox(height: 16.0),
-                      
-                      ProfileInfoField(
-                        controller: tglLahirController,
-                        label: 'Tanggal Lahir',
-                        readOnly: true,
-                      ),
-                      SizedBox(height: 16.0),
-                      
-                      ProfileInfoField(
-                        controller: emailController,
-                        label: 'Email',
-                        readOnly: true,
+                      SizedBox(height: 20.0),
+                      Text('First Name: $firstName',
+                          style: TextStyle(
+                              fontSize: 16.0, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 8.0),
+                      Text('Last Name: $lastName',
+                          style: TextStyle(
+                              fontSize: 16.0, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 8.0),
+                      Text('Birthdate: $birthdate',
+                          style: TextStyle(
+                              fontSize: 16.0, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 8.0),
+                      Text('Email: $email',
+                          style: TextStyle(
+                              fontSize: 16.0, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 20.0), // Add spacing
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Navigasi ke halaman EditProfilePage
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EditProfilePage()),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xff97CBFB), // Warna background
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 15),
+                          ),
+                          child: Text('Edit Profile',
+                              style: TextStyle(fontSize: 16.0)),
+                        ),
                       ),
                     ],
                   ),
                 ),
-    );
-  }
-
-  @override
-  void dispose() {
-    namaDpnController.dispose();
-    namaBlkgController.dispose();
-    tglLahirController.dispose();
-    emailController.dispose();
-    super.dispose();
-  }
-}
-
-class ProfileInfoField extends StatelessWidget {
-  final TextEditingController controller;
-  final String label;
-  final bool readOnly;
-
-  const ProfileInfoField({
-    required this.controller,
-    required this.label,
-    this.readOnly = false,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      readOnly: readOnly,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        filled: readOnly,
-        fillColor: Colors.grey[100],
-      ),
     );
   }
 }

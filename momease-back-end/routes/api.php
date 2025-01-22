@@ -40,9 +40,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('/profile/update', [ProfileController::class, 'update']);
     Route::delete('/profile/delete', [ProfileController::class, 'delete']);
-    Route::get('/profile/show', function (Request $request) {
-        return $request->user();
-    });
-
+    Route::get('/profile/show', [ProfileController::class, 'show']);
     Route::post('/chat/send', [ChatbotController::class, 'sendMessage']);
 });
