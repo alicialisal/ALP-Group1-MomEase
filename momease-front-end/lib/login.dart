@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:front_end/mood_journaling.dart';
+import 'package:front_end/mood_journaling/mood_journaling.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'services/api_service.dart';
@@ -102,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => MoodJournaling()),
+          MaterialPageRoute(builder: (context) => MoodTrackerScreen()),
         );
         // Lakukan navigasi atau penyimpanan token
       } else {
