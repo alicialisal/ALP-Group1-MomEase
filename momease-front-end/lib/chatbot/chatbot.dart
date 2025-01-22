@@ -26,12 +26,12 @@ class ChatMessage {
   }
 }
 
-class ChatbotPage extends StatefulWidget {
+class ChatListPage extends StatefulWidget {
   @override
-  _ChatbotPageState createState() => _ChatbotPageState();
+  _ChatListPageState createState() => _ChatListPageState();
 }
 
-class _ChatbotPageState extends State<ChatbotPage> {
+class _ChatListPageState extends State<ChatListPage> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [];
