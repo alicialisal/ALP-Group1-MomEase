@@ -176,6 +176,7 @@ class MoodJournalingController extends Controller implements HasMiddleware
         $validator = Validator::make($request->all(), [
             'month' => 'required|integer|between:1,12', // Bulan antara 1-12
             'year'  => 'required|integer|min:2000|max:' . Carbon::now()->year, // Tahun minimal 2000 sampai tahun ini
+            'idUser'=> 'required|exists:users,idUser'
         ]);
     
         // Jika validasi gagal, kembalikan respons error
@@ -186,12 +187,14 @@ class MoodJournalingController extends Controller implements HasMiddleware
         // Ambil bulan dan tahun dari parameter
         $month = $request->input('month');
         $year = $request->input('year');
+        $idUser = $request->input('idUser');
     
         // Query untuk mendapatkan data mood per hari
         $dailyMoods = moodJournaling::select(
             DB::raw('DATE(tglInput) as date'), // Ambil tanggal
             'mood'                             // Ambil nilai mood
         )
+            ->where('idUser', $idUser) 
             ->whereMonth('tglInput', $month)
             ->whereYear('tglInput', $year)
             // ->groupBy(DB::raw('DATE(tglInput)'), 'mood') // Kelompokkan berdasarkan tanggal dan mood

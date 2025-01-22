@@ -45,7 +45,7 @@ Map<String, int> moodToNumber = {
     };
 
 class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
-  Map<DateTime, Map<String, dynamic>> _moodData = {};
+  Map<DateTime, Map<int, dynamic>> _moodData = {};
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
@@ -56,18 +56,56 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
   }
 
   Future<void> _loadMoodData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final data =
-        prefs.getString('moodData') ?? '{}'; // Ambil data yang ada, jika ada
+    // final prefs = await SharedPreferences.getInstance();
+    // final data =
+    //     prefs.getString('moodData') ?? '{}'; // Ambil data yang ada, jika ada
 
-    setState(() {
-      // Decode JSON dan transformasikan menjadi Map<DateTime, Map<String, dynamic>>
-      _moodData = (jsonDecode(data) as Map<String, dynamic>)
-          .map<DateTime, Map<String, dynamic>>((key, value) {
-        // Mengkonversi string tanggal menjadi DateTime dan memastikan value menjadi Map<String, dynamic>
-        return MapEntry(DateTime.parse(key), Map<String, dynamic>.from(value));
+    // setState(() {
+    //   // Decode JSON dan transformasikan menjadi Map<DateTime, Map<String, dynamic>>
+    //   _moodData = (jsonDecode(data) as Map<String, dynamic>).map<DateTime, Map<int, dynamic>>((key, value) {
+    //     // Mengkonversi string tanggal menjadi DateTime dan memastikan value menjadi Map<int, dynamic>
+    //     return MapEntry(
+    //       DateTime.parse(key), // Mengkonversi string tanggal menjadi DateTime
+    //       (value as Map<String, dynamic>).map<int, dynamic>((innerKey, innerValue) {
+    //         // Mengkonversi key dari String ke int dan memastikan value menjadi dynamic
+    //         return MapEntry(int.parse(innerKey), innerValue);
+    //       }),
+    //     );
+    //   });
+    // });
+
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int? idUserActive = prefs.getInt('idUser');
+      String? tokenActive = prefs.getString('token');
+      // Validasi idUserActive
+      if (idUserActive == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('ID User tidak ditemukan. Silakan login kembali.')),
+        );
+        return;
+      }
+
+      if (tokenActive == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Token tidak ditemukan. Silakan login kembali.')),
+        );
+        return;
+      }
+
+      JournalingService journalingService = JournalingService();
+      Map<DateTime, Map<int, dynamic>> moodData = await journalingService.fetchMoodSummary(tokenActive, idUserActive);
+      
+      setState(() {
+        _moodData = moodData;
       });
-    });
+
+      // Simpan data mood ke SharedPreferences jika diperlukan
+      prefs.setString('moodData', jsonEncode(_moodData));
+
+    } catch (e) {
+      print('Error loading mood data: $e');
+    }
   }
 
   Future<void> _saveMoodData() async {
@@ -79,7 +117,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
       jsonEncode(
         _moodData.map(
           (key, value) =>
-              MapEntry(key.toIso8601String(), Map<String, dynamic>.from(value)),
+              MapEntry(key.toIso8601String(), Map<int, dynamic>.from(value)),
         ),
       ),
     );
@@ -98,7 +136,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
       setState(() {
         _moodData[date] = result;
       });
-      _saveMoodData();
+      // _saveMoodData();
     }
   }
 
@@ -224,7 +262,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
 
 class FillMoodPage extends StatefulWidget {
   final DateTime selectedDate;
-  final Map<String, dynamic>? moodData;
+  final Map<int, dynamic>? moodData;
 
   FillMoodPage({required this.selectedDate, this.moodData});
 
