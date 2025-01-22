@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:blogpage/models/blog_model.dart';
-import 'package:blogpage/screens/blog_detail_screen.dart'; // Update the path if necessary
-
+import 'package:front_end/blog_page/models/blog_model.dart';
+import 'package:front_end/blog_page/screens/blog_detail_screen.dart'; // Update the path if necessary
 void main() {
   runApp(MyApp());
 }

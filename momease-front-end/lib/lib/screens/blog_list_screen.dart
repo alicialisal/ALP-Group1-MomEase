@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/blog_model.dart';
+import 'package:front_end/blog_page/models/blog_model.dart';
+
 import '../screens/blog_detail_screen.dart';
 import '../widgets/blog_card.dart';
 

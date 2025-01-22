@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/blog_model.dart';
+import 'package:front_end/blog_page/models/blog_model.dart';
+
 import '../widgets/comment_widget.dart';
 
 class BlogDetailScreen extends StatefulWidget {

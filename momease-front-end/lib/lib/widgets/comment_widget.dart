@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:blogpage/models/blog_model.dart';
+import 'package:front_end/blog_page/models/blog_model.dart';
 
 class CommentWidget extends StatelessWidget {
   final Comment comment;
