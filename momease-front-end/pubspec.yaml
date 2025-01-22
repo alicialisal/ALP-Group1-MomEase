@@ -73,6 +73,7 @@ flutter:
   assets:
     - assets/
     - assets/emote/
+    - assets/images/
     
 
   # An image asset can refer to one or more resolution-specific "variants", see

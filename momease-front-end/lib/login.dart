@@ -138,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
             children: <Widget>[
               Align(
                 alignment: Alignment.topCenter,
-                child: Image.asset('assets/logo.png', height: 76),
+                child: Image.asset('assets/images/logo.png', height: 76),
               ),
               SizedBox(height: 45),
               Text(
