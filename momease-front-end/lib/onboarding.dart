@@ -22,11 +22,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   // Daftar gambar untuk carousel
   final List<String> _images = [
-    'assets/mood_track.png',
-    'assets/chatbot.png',
-    'assets/blog.png',
-    'assets/relaxation.png',
-    'assets/self_asses.png',
+    'assets/images/mood_track.png',
+    'assets/images/chatbot.png',
+    'assets/images/blog.png',
+    'assets/images/relaxation.png',
+    'assets/images/self_asses.png',
   ];
 
   // Daftar deskripsi tambahan untuk setiap halaman
@@ -84,7 +84,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               width: 100, // Atur lebar logo
               height: 100, // Atur tinggi logo
               child: Image.asset(
-                'assets/logo.png', // Path logo Anda
+                'assets/images/logo.png', // Path logo Anda
                 fit: BoxFit.contain, // Pastikan logo tidak terpotong
               ),
             ),

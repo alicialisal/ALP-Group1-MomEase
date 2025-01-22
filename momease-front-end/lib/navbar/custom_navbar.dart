@@ -93,7 +93,7 @@ class CustomFloatingNavBar extends StatelessWidget {
           case 0:
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ChatBotPage()),
+              MaterialPageRoute(builder: (context) => ChatListPage()),
             );
             break;
           case 1:

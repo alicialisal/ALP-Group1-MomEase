@@ -151,11 +151,11 @@ class _LoginPageState extends State<LoginPage> {
           key: _formKey,
           child: ListView(
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 30.0,
-                ), // Menambahkan jarak atas
-                child: Image.asset('assets/logo.png', height: 76),
+
+              Align(
+                alignment: Alignment.topCenter,
+                child: Image.asset('assets/images/logo.png', height: 76),
+
               ),
               SizedBox(height: 45),
               Text(
