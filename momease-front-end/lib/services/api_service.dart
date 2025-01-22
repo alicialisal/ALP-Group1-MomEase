@@ -25,6 +25,8 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
+        print('Response user: ${response.data['user']}');
+        print('Response token: ${response.data['token']}');
         return {
           'success': true,
           'user': response.data['user'],
