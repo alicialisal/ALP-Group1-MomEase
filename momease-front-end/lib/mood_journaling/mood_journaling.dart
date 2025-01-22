@@ -1,22 +1,32 @@
-import 'package:flutter/material.dart';
-import 'package:front_end/navbar/custom_navbar.dart';
-import 'package:table_calendar/table_calendar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
-import 'history_mood_journaling.dart';
+import 'package:flutter/material.dart';
+import 'package:front_end/navbar/custom_navbar.dart';
+import 'package:front_end/services/journaling_service.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:table_calendar/table_calendar.dart';
+
 import '../notification/notification.dart';
+import 'history_mood_journaling.dart';
 
 class MoodTrackerScreen extends StatefulWidget {
   @override
   _MoodTrackerScreenState createState() => _MoodTrackerScreenState();
 }
 
+Map<String, int> moodToNumber = {
+      "Angry": 1,
+      "Sad": 2,
+      "Neutral": 3,
+      "Happy": 4,
+      "Excited": 5,
+    };
+
 class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
-  Map<DateTime, Map<String, dynamic>> _moodData = {};
+  Map<DateTime, Map<int, dynamic>> _moodData = {};
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
@@ -27,18 +37,51 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
   }
 
   Future<void> _loadMoodData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final data =
-        prefs.getString('moodData') ?? '{}'; // Ambil data yang ada, jika ada
+    // final prefs = await SharedPreferences.getInstance();
+    // final data =
+    //     prefs.getString('moodData') ?? '{}'; // Ambil data yang ada, jika ada
 
-    setState(() {
-      // Decode JSON dan transformasikan menjadi Map<DateTime, Map<String, dynamic>>
-      _moodData = (jsonDecode(data) as Map<String, dynamic>)
-          .map<DateTime, Map<String, dynamic>>((key, value) {
-        // Mengkonversi string tanggal menjadi DateTime dan memastikan value menjadi Map<String, dynamic>
-        return MapEntry(DateTime.parse(key), Map<String, dynamic>.from(value));
+    // setState(() {
+    //   // Decode JSON dan transformasikan menjadi Map<DateTime, Map<String, dynamic>>
+    //   _moodData = (jsonDecode(data) as Map<String, dynamic>)
+    //       .map<DateTime, Map<String, dynamic>>((key, value) {
+    //     // Mengkonversi string tanggal menjadi DateTime dan memastikan value menjadi Map<String, dynamic>
+    //     return MapEntry(DateTime.parse(key), Map<String, dynamic>.from(value));
+    //   });
+    // });
+
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int? idUserActive = prefs.getInt('idUser');
+      String? tokenActive = prefs.getString('token');
+      // Validasi idUserActive
+      if (idUserActive == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('ID User tidak ditemukan. Silakan login kembali.')),
+        );
+        return;
+      }
+
+      if (tokenActive == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Token tidak ditemukan. Silakan login kembali.')),
+        );
+        return;
+      }
+
+      JournalingService journalingService = JournalingService();
+      Map<DateTime, Map<int, dynamic>> moodData = await journalingService.fetchMoodSummary(tokenActive, idUserActive);
+      
+      setState(() {
+        _moodData = moodData;
       });
-    });
+
+      // Simpan data mood ke SharedPreferences jika diperlukan
+      prefs.setString('moodData', jsonEncode(_moodData));
+
+    } catch (e) {
+      print('Error loading mood data: $e');
+    }
   }
 
   Future<void> _saveMoodData() async {
@@ -50,7 +93,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
       jsonEncode(
         _moodData.map(
           (key, value) =>
-              MapEntry(key.toIso8601String(), Map<String, dynamic>.from(value)),
+              MapEntry(key.toIso8601String(), Map<int, dynamic>.from(value)),
         ),
       ),
     );
@@ -69,7 +112,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
       setState(() {
         _moodData[date] = result;
       });
-      _saveMoodData();
+      // _saveMoodData();
     }
   }
 
@@ -276,9 +319,10 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                 markerBuilder: (context, day, _) {
                   if (_moodData.containsKey(day)) {
                     final overallMood = _moodData[day]?['overallMood'];
+                    int moodNumber = moodToNumber[overallMood] ?? 0;
                     if (overallMood != null) {
                       final moodImage =
-                          'assets/emote/${overallMood.toLowerCase()}_selected.png';
+                          'assets/emote/${moodNumber}_selected.png';
                       return Stack(
                         alignment: Alignment.center,
                         children: [
@@ -310,7 +354,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
 
 class FillMoodPage extends StatefulWidget {
   final DateTime selectedDate;
-  final Map<String, dynamic>? moodData;
+  final Map<int, dynamic>? moodData;
 
   FillMoodPage({required this.selectedDate, this.moodData});
 
@@ -324,6 +368,8 @@ class _FillMoodPageState extends State<FillMoodPage> {
   String? selectedOverallMood;
   TextEditingController _dayDescriptionController = TextEditingController();
   bool moodSaved = false;
+  bool _isLoading = false;
+  final JournalingService _apiService = JournalingService();
   String _randomQuestion = "Share about your day..."; // Initial message
   XFile? _image;
 
@@ -429,9 +475,10 @@ class _FillMoodPageState extends State<FillMoodPage> {
             bool isSelected = selectedMoods.contains(mood);
 
             // Determine the image name based on the selected state
+            int moodNumber = moodToNumber[mood] ?? 0; // Default ke 0 jika mood tidak ada dalam map
             String imageName = isSelected
-                ? 'assets/emote/${mood.toLowerCase()}_selected.png'
-                : 'assets/emote/${mood.toLowerCase()}.png';
+                ? 'assets/emote/${moodNumber}_selected.png'
+                : 'assets/emote/${moodNumber}.png';
 
             // Set the background color based on mood category
             Color moodBackgroundColor;
@@ -493,8 +540,85 @@ class _FillMoodPageState extends State<FillMoodPage> {
     );
   }
 
+  Future<void> _handleSaveMood(int mood) async {
+    // if (_passwordController.text != _confirmPasswordController.text) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Passwords do not match')),
+    //   );
+    //   return;
+    // }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? idUserActive = prefs.getInt('idUser');
+    String? tokenActive = prefs.getString('token');
+    // Validasi idUserActive
+    if (idUserActive == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('ID User tidak ditemukan. Silakan login kembali.')),
+      );
+      return;
+    }
+
+    if (tokenActive == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Token tidak ditemukan. Silakan login kembali.')),
+      );
+      return;
+    }
+
+    final moodData = {
+      'idUser': idUserActive, // Ganti dengan ID user yang sesuai
+      'mood': mood,
+      'perasaan': selectedUserMood,
+      'kondisiBayi': selectedBabyMood,
+      'textJurnal': _dayDescriptionController.text,
+      // 'imagePath': _image?.path,
+      'tglInput': widget.selectedDate.toLocal().toString(),
+    };
+
+    // Convert to JSON string
+    final jsonString = jsonEncode(moodData);
+    
+    // Print to console
+    print('JSON Format: $jsonString');
+
+    final result = await _apiService.saveMood(moodData, tokenActive);
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (result['success']) {
+      // Registrasi berhasil
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Journal saved'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        Navigator.pop(context);
+    } else {
+      // Registrasi gagal
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result['message'] ?? 'Save failed')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final Map<String, int> moodToNumber = {
+      "Angry": 1,
+      "Sad": 2,
+      "Neutral": 3,
+      "Happy": 4,
+      "Excited": 5,
+    };
     return Scaffold(
       appBar: AppBar(
         title: Text('Fill Mood'),
@@ -634,14 +758,15 @@ class _FillMoodPageState extends State<FillMoodPage> {
               ],
               SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context, {
-                    'userMood': selectedUserMood,
-                    'babyMood': selectedBabyMood,
-                    'overallMood': selectedOverallMood,
-                    'description': _dayDescriptionController.text,
-                    'image': _image?.path,
-                  });
+                onPressed: () async{
+                  // Navigator.pop(context, {
+                  //   'userMood': selectedUserMood,
+                  //   'babyMood': selectedBabyMood,
+                  //   'overallMood': selectedOverallMood,
+                  //   'description': _dayDescriptionController.text,
+                  //   'image': _image?.path,
+                  // });
+                   _handleSaveMood(moodToNumber[selectedOverallMood] ?? 0);
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF6495ED),
