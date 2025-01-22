@@ -39,7 +39,7 @@ class _RelaxationScreenState extends State<RelaxationScreen> {
       'duration': '3 minutes',
       'benefit': 'Reduce stress, calm nerves',
       'category': 'Meditation',
-      'image': 'assets/images_kegiatan_relaksasi/deep_breath.jpg',
+      'image': 'assets/images/deep_breath.jpg',
       'categoryColor': Colors.green,
       'description':
           'Deep breathing helps slow the rhythm, promoting relaxation. Sit comfortably, inhale deeply to expand your belly, hold briefly, and exhale slowly. Each breath brings calm, reduces stress, and boosts oxygen, leaving a sense of peace.',
@@ -49,20 +49,20 @@ class _RelaxationScreenState extends State<RelaxationScreen> {
       'duration': '10 minutes',
       'benefit': 'Increase focus, reduce anxiety',
       'category': 'Meditation',
-      'image': 'assets/images_kegiatan_relaksasi/meditation.jpg',
+      'image': 'assets/images/meditation.jpg',
       'categoryColor': Colors.green,
       'description':
           'Mindfulness meditation helps you stay present by focusing on your breath and surroundings. This practice encourages a state of awareness and calm, making it effective in reducing anxiety and improving concentration. By dedicating a few moments to mindfulness, you can experience greater mental clarity, emotional balance, and a deeper sense of peace.',
     },
     {
-      'title': 'Relaxing Music Listening',
-      'duration': '15 minutes',
-      'benefit': 'Reduce stress, calm the mind',
-      'category': 'Focus',
-      'image': 'assets/images_kegiatan_relaksasi/listening_music.jpg',
-      'categoryColor': Colors.purple,
+      'title': 'Positive Affirmation',
+      'duration': '8 minutes',
+      'benefit': 'Increase confidence and positive mindset',
+      'category': 'Meditation',
+      'image': 'assets/images/positive_afirmation.png',
+      'categoryColor': Colors.green,
       'description':
-          'Listening to relaxing music is a simple yet powerful way to soothe your mind and body. The gentle melodies help reduce stress, calm your emotions, and create a tranquil atmosphere. This activity can enhance focus, uplift your mood, and provide a refreshing mental break from daily pressures.',
+          'Positive Affirmation Meditation is a simple yet powerful practice where you sit comfortably and repeat positive affirmations silently or softly aloud. These affirmations, such as "I am calm and peaceful" or "I accept myself as I am," help reprogram your mind with empowering thoughts. This activity is designed to boost self-confidence, cultivate a positive mindset, and promote inner peace.',
     },
   ];
 
