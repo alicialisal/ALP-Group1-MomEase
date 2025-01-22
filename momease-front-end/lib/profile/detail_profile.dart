@@ -14,6 +14,7 @@ class _DetailProfilePageState extends State<DetailProfilePage> {
   String lastName = '';
   String birthdate = '';
   String email = '';
+  String? profileImageUrl; // Tambahkan variabel untuk URL gambar profil
 
   bool isLoading = true;
   String? error;
@@ -83,11 +84,12 @@ class _DetailProfilePageState extends State<DetailProfilePage> {
       lastName = userData['namaBlkg'] ?? '';
       birthdate = userData['tglLahir'] ?? '';
       email = userData['email'] ?? '';
+      profileImageUrl = userData['profile_image']; // Ambil URL gambar profil
       isLoading = false;
     });
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -116,52 +118,71 @@ class _DetailProfilePageState extends State<DetailProfilePage> {
               : Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Center(
-                      ),
+                      // // Gambar profil
+                      // Center(
+                      //   child: CircleAvatar(
+                      //     radius: 50.0,
+                      //     backgroundImage: profileImageUrl != null
+                      //         ? NetworkImage(profileImageUrl!)
+                      //         : AssetImage(
+                      //                 'assets/image_profile/michie.png') // Gambar default jika URL null
+                      //             as ImageProvider,
+                      //   ),
+                      // ),
+                      // SizedBox(height: 20.0),
+
+                      // Data profil dalam TextField (tidak bisa diedit)
+                      _buildReadOnlyTextField('First Name', firstName),
+                      SizedBox(height: 12.0),
+                      _buildReadOnlyTextField('Last Name', lastName),
+                      SizedBox(height: 12.0),
+                      _buildReadOnlyTextField('Birthdate', birthdate),
+                      SizedBox(height: 12.0),
+                      _buildReadOnlyTextField('Email', email),
                       SizedBox(height: 20.0),
-                      Text('First Name: $firstName',
-                          style: TextStyle(
-                              fontSize: 16.0, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 8.0),
-                      Text('Last Name: $lastName',
-                          style: TextStyle(
-                              fontSize: 16.0, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 8.0),
-                      Text('Birthdate: $birthdate',
-                          style: TextStyle(
-                              fontSize: 16.0, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 8.0),
-                      Text('Email: $email',
-                          style: TextStyle(
-                              fontSize: 16.0, fontWeight: FontWeight.bold)),
-                      SizedBox(height: 20.0), // Add spacing
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Navigasi ke halaman EditProfilePage
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => EditProfilePage()),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xff97CBFB), // Warna background
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 15),
+
+                      // Tombol Edit Profile
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EditProfilePage()),
+                          ).then((_) {
+                            // Memuat ulang data profil setelah kembali dari EditProfilePage
+                            fetchUserProfile();
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 14.0, horizontal: 24.0),
+                          backgroundColor: Color(0xff97CBFB),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
-                          child: Text('Edit Profile',
-                              style: TextStyle(fontSize: 16.0)),
                         ),
+                        child: Text('Edit Profile',
+                            style: TextStyle(fontSize: 16.0)),
                       ),
                     ],
                   ),
                 ),
+    );
+  }
+
+  // Helper function untuk membuat TextField read-only
+  Widget _buildReadOnlyTextField(String label, String value) {
+    return TextField(
+      controller: TextEditingController(text: value),
+      readOnly: true,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(),
+        // Menghilangkan ikon pensil (suffixIcon)
+      ),
     );
   }
 }

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'package:dio/dio.dart';
-import 'package:front_end/services/api_service.dart'; 
+import 'package:intl/intl.dart';
+import 'package:front_end/services/api_service.dart';
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -15,90 +13,112 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final TextEditingController birthdateController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
 
-  File? _image;
   final ApiService _apiService = ApiService();
   bool _isLoading = false;
+  bool _isInitializing = true;
 
   @override
   void initState() {
     super.initState();
-    _loadProfileData();
+    _fetchProfileData();
   }
 
-  Future<void> _loadProfileData() async {
-    setState(() {
-      _isLoading = true;
-    });
+  Future<void> _fetchProfileData() async {
     try {
-      final profileData = await _apiService.getProfile();
-      if (profileData['success']) {
-        final profile = profileData['profile'];
-        firstNameController.text = profile['namaDpn'];
-        lastNameController.text = profile['namaBlkg'];
-        birthdateController.text = profile['tglLahir'];
-        emailController.text = profile['email'];
+      setState(() => _isInitializing = true);
+      
+      // Add a getProfile method to your ApiService that fetches the current profile
+      final response = await _apiService.getProfile();
+      
+      if (response['success']) {
+        final profile = response['profile'];
+        setState(() {
+          firstNameController.text = profile['namaDpn'] ?? '';
+          lastNameController.text = profile['namaBlkg'] ?? '';
+          birthdateController.text = profile['tglLahir'] ?? '';
+          emailController.text = profile['email'] ?? '';
+        });
       } else {
-        _showErrorSnackbar(profileData['message']);
+        _showErrorSnackbar('Failed to load profile data');
       }
     } catch (e) {
-      _showErrorSnackbar('Failed to load profile data.');
+      _showErrorSnackbar('Error loading profile data');
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isInitializing = false);
     }
   }
 
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    
+    if (picked != null) {
       setState(() {
-        _image = File(pickedFile.path);
+        birthdateController.text = DateFormat('yyyy-MM-dd').format(picked);
       });
     }
   }
 
   Future<void> _updateProfile() async {
-    setState(() {
-      _isLoading = true;
-    });
+    if (!_validateInputs()) return;
 
-    String firstName = firstNameController.text;
-    String lastName = lastNameController.text;
-    String birthdate = birthdateController.text;
-    String email = emailController.text;
+    setState(() => _isLoading = true);
 
     try {
-      FormData formData = FormData.fromMap({
-        'namaDpn': firstName,
-        'namaBlkg': lastName,
-        'tglLahir': birthdate,
-        'email': email,
-      });
+      final profileData = {
+        'namaDpn': firstNameController.text,
+        'namaBlkg': lastNameController.text,
+        'tglLahir': birthdateController.text,
+        'email': emailController.text,
+      };
 
-      final response = await _apiService.updateProfile(formData);
+      final response = await _apiService.updateProfile(profileData);
 
       if (response['success']) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Profile updated successfully!')),
+          SnackBar(
+            content: Text(response['message'] ?? 'Profile updated successfully'),
+            backgroundColor: Colors.green,
+          ),
         );
-        Navigator.pop(context);
+        Navigator.pop(context, true); // Pass true to indicate successful update
       } else {
-        _showErrorSnackbar(response['message']);
+        _showErrorSnackbar(response['message'] ?? 'Failed to update profile');
       }
     } catch (e) {
-      _showErrorSnackbar('Failed to update profile.');
+      _showErrorSnackbar('Failed to update profile');
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
     }
+  }
+
+  bool _validateInputs() {
+    if (firstNameController.text.isEmpty) {
+      _showErrorSnackbar('First name is required');
+      return false;
+    }
+    if (emailController.text.isEmpty || !emailController.text.contains('@')) {
+      _showErrorSnackbar('Valid email is required');
+      return false;
+    }
+    if (birthdateController.text.isEmpty) {
+      _showErrorSnackbar('Birthdate is required');
+      return false;
+    }
+    return true;
   }
 
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        duration: Duration(seconds: 3),
+      ),
     );
   }
 
@@ -108,79 +128,83 @@ class _EditProfilePageState extends State<EditProfilePage> {
       appBar: AppBar(
         title: Text('Edit Profile'),
         centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context, false), // Pass false if no update
+        ),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: _isLoading
-              ? CircularProgressIndicator()
-              : SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: _pickImage,
-                        child: CircleAvatar(
-                          radius: 50.0,
-                          backgroundImage: _image != null
-                              ? FileImage(_image!)
-                              : AssetImage(
-                                  'assets/image_profile/michie.png') // Gambar default
-                              as ImageProvider,
-                        ),
-                      ),
-                      SizedBox(height: 20.0),
-                      TextField(
-                        controller: firstNameController,
-                        decoration: InputDecoration(
-                          labelText: 'First Name',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      SizedBox(height: 12.0),
-                      TextField(
-                        controller: lastNameController,
-                        decoration: InputDecoration(
-                          labelText: 'Last Name',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      SizedBox(height: 12.0),
-                      TextField(
+      body: _isInitializing
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextField(
+                    controller: firstNameController,
+                    decoration: InputDecoration(
+                      labelText: 'First Name',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    controller: lastNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Last Name',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  GestureDetector(
+                    onTap: () => _selectDate(context),
+                    child: AbsorbPointer(
+                      child: TextField(
                         controller: birthdateController,
                         decoration: InputDecoration(
                           labelText: 'Birthdate',
                           border: OutlineInputBorder(),
+                          suffixIcon: Icon(Icons.calendar_today),
                         ),
                       ),
-                      SizedBox(height: 12.0),
-                      TextField(
-                        controller: emailController,
-                        decoration: InputDecoration(
-                          labelText: 'Email',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      SizedBox(height: 20.0),
-                      ElevatedButton(
-                        onPressed: _updateProfile,
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 14.0, horizontal: 24.0),
-                          backgroundColor: Color(0xff97CBFB),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                        child: Text('Save Changes',
-                            style: TextStyle(fontSize: 16.0)),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-        ),
-      ),
+                  SizedBox(height: 16),
+                  TextField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: _isLoading ? null : _updateProfile,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xff97CBFB),
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      _isLoading ? 'Updating...' : 'Save Changes',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+            ),
     );
+  }
+
+  @override
+  void dispose() {
+    firstNameController.dispose();
+    lastNameController.dispose();
+    birthdateController.dispose();
+    emailController.dispose();
+    super.dispose();
   }
 }

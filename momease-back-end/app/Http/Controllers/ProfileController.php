@@ -65,6 +65,8 @@ class ProfileController extends Controller
             $user->tglLahir = $request->tglLahir;
             $user->email = $request->email;
 
+            $user->save(); // Tambahkan baris ini
+
             return response()->json([
                 'message' => 'Profile updated successfully',
                 'profile' => [

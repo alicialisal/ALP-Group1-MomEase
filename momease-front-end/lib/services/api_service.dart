@@ -200,29 +200,23 @@ class ApiService {
     }
   }
 
-Future<Map<String, dynamic>> updateProfile(FormData formData) async {
+Future<Map<String, dynamic>> updateProfile(Map<String, dynamic> profileData) async {
     try {
-      final response = await _dio.put(
-        '/profile/update',
-        data: formData,
+      final response = await _dio.post(
+        '$_baseUrl/profile/update',
+        data: profileData,
       );
-
-      if (response.statusCode == 200) {
-        return {
-          'success': true,
-          'message': 'Profile updated successfully',
-          'profile': response.data['profile'],
-        };
-      } else {
-        return {
-          'success': false,
-          'message': 'Failed to update profile.',
-        };
-      }
-    } on DioError catch (e) {
-      return _handleDioError(e);
-    } catch (e) {
-      return _handleError(e);
+      
+      return {
+        'success': true,
+        'profile': response.data['profile'],
+        'message': response.data['message'],
+      };
+    } on DioException catch (e) {
+      return {
+        'success': false,
+        'message': e.response?.data['message'] ?? 'Failed to update profile',
+      };
     }
   }
 }
