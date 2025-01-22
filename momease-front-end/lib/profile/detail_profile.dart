@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences.dart'; // Add this package to pubspec.yaml
+import 'package:shared_preferences/shared_preferences.dart'; // Add this package to pubspec.yaml
 
 class DetailProfilePage extends StatefulWidget {
   @override
