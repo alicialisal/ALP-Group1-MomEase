@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:front_end/mood_journaling.dart';
+import 'package:front_end/mood_journaling/mood_journaling.dart';
 import 'services/api_service.dart';
 import 'signup.dart';
 
@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => MoodJournaling()),
+          MaterialPageRoute(builder: (context) => MoodTrackerScreen()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -87,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => MoodJournaling()),
+        MaterialPageRoute(builder: (context) => MoodTrackerScreen()),
       );
       // Lakukan navigasi atau penyimpanan token
     } else {
@@ -146,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 23,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
                   color: Color(0xff324D81),
                 ),
               ),
@@ -157,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(
                   fontSize: 15,
                   color: Color(0xFF657AA1),
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               SizedBox(height: 60),
@@ -229,7 +229,7 @@ class _LoginPageState extends State<LoginPage> {
                     'Don\'t have an account?',
                     style: TextStyle(
                       color: Color(0xff1B3C73),
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
                   ),
@@ -244,7 +244,7 @@ class _LoginPageState extends State<LoginPage> {
                       'Click here',
                       style: TextStyle(
                         color: Color(0xffFFBCD9),
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                         fontSize: 14,
                       ),
                     ),

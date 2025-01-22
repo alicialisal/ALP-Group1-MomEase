@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:front_end/blog_page/blog.dart';
+import 'package:front_end/chatbot/chatbot.dart';
+import 'package:front_end/kegiatan_relaksasi/search_page.dart';
+import 'package:front_end/mood_journaling/mood_journaling.dart';
+import 'package:front_end/profile/profile.dart';
 
 class CustomFloatingNavBar extends StatelessWidget {
   final int selectedIndex;
@@ -47,7 +52,10 @@ class CustomFloatingNavBar extends StatelessWidget {
           bottom: 30,
           child: GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, '/mood_journaling');
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MoodTrackerScreen()),
+              );
             },
             child: Container(
               height: 70,
@@ -83,16 +91,28 @@ class CustomFloatingNavBar extends StatelessWidget {
       onTap: () {
         switch (index) {
           case 0:
-            Navigator.pushNamed(context, '/chatbot');
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ChatBotPage()),
+            );
             break;
           case 1:
-            Navigator.pushNamed(context, '/relaxation');
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => RelaxationScreen()),
+            );
             break;
           case 3:
-            Navigator.pushNamed(context, '/blogs');
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => BlogPage()),
+            );
             break;
           case 4:
-            Navigator.pushNamed(context, '/profile');
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfilePage()),
+            );
             break;
         }
       },
