@@ -108,7 +108,7 @@ class _RelaxationScreenState extends State<RelaxationScreen> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: 18,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

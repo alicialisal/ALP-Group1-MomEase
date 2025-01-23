@@ -60,25 +60,13 @@ class ProfilePage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment
                               .spaceBetween, // Mengatur posisi konten
                           children: [
-                            Row(
-                              children: [
-                                // Gambar berbentuk lingkaran
-                                CircleAvatar(
-                                  radius: 30.0,
-                                  backgroundImage: AssetImage(
-                                      'assets/images/image_profile/michie.png'),
-                                ),
-                                SizedBox(width: 15.0),
-                                // Nama user
-                                Text(
-                                  'Michie',
-                                  style: TextStyle(
-                                    fontSize: 18.0,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              'My profile',
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                             // Ikon panah ke kanan
                             Icon(

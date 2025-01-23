@@ -18,7 +18,8 @@ class JournalingService {
   // Map<DateTime, Map<String, dynamic>> _moodData = {};
 
   // Fungsi untuk mengambil data mood dari API
-  Future<Map<DateTime, Map<String, dynamic>>> fetchMoodDetails(String bearerToken, int idUser) async {
+  Future<Map<DateTime, Map<String, dynamic>>> fetchMoodDetails(
+      String bearerToken, int idUser) async {
     // Validasi parameter idUser
     if (idUser <= 0) {
       throw Exception('Invalid idUser');
@@ -27,12 +28,16 @@ class JournalingService {
     // Mendapatkan bulan dan tahun saat ini
     DateTime now = DateTime.now();
     int month = now.month; // Bulan dalam bentuk angka (1-12)
-    int year = now.year;   // Tahun dalam bentuk angka (contoh: 2025)
-    
+    int year = now.year; // Tahun dalam bentuk angka (contoh: 2025)
+
     try {
       final response = await _dio.get(
         '/mood-details',
-        queryParameters: {'idUser': idUser, 'month': month, 'year':year}, // Menambahkan idUser sebagai query parameter jika diperlukan
+        queryParameters: {
+          'idUser': idUser,
+          'month': month,
+          'year': year
+        }, // Menambahkan idUser sebagai query parameter jika diperlukan
         options: Options(
           headers: {
             'Authorization': 'Bearer $bearerToken',
@@ -74,7 +79,8 @@ class JournalingService {
   }
 
   // Fungsi untuk mengambil data mood dari API
-  Future<Map<DateTime, Map<int, dynamic>>> fetchMoodSummary(String bearerToken, int idUser) async {
+  Future<Map<DateTime, Map<int, dynamic>>> fetchMoodSummary(
+      String bearerToken, int idUser) async {
     // Validasi parameter idUser
     if (idUser <= 0) {
       throw Exception('Invalid idUser');
@@ -83,12 +89,16 @@ class JournalingService {
     // Mendapatkan bulan dan tahun saat ini
     DateTime now = DateTime.now();
     int month = now.month; // Bulan dalam bentuk angka (1-12)
-    int year = now.year;   // Tahun dalam bentuk angka (contoh: 2025)
-    
+    int year = now.year; // Tahun dalam bentuk angka (contoh: 2025)
+
     try {
       final response = await _dio.get(
         '/mood-summary',
-        queryParameters: {'idUser': idUser, 'month': month, 'year':year}, // Menambahkan idUser sebagai query parameter jika diperlukan
+        queryParameters: {
+          'idUser': idUser,
+          'month': month,
+          'year': year
+        }, // Menambahkan idUser sebagai query parameter jika diperlukan
         options: Options(
           headers: {
             'Authorization': 'Bearer $bearerToken',
@@ -129,7 +139,8 @@ class JournalingService {
   }
 
   // Fungsi journaling
-  Future<Map<String, dynamic>> saveMood(Map<String, dynamic> journalingData, String bearerToken) async {
+  Future<Map<String, dynamic>> saveMood(
+      Map<String, dynamic> journalingData, String bearerToken) async {
     try {
       final response = await _dio.post(
         '/journaling',
