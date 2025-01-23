@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 
 class JournalingService {
@@ -14,6 +16,62 @@ class JournalingService {
   );
 
   // Map<DateTime, Map<String, dynamic>> _moodData = {};
+
+  // Fungsi untuk mengambil data mood dari API
+  Future<Map<DateTime, Map<String, dynamic>>> fetchMoodDetails(String bearerToken, int idUser) async {
+    // Validasi parameter idUser
+    if (idUser <= 0) {
+      throw Exception('Invalid idUser');
+    }
+
+    // Mendapatkan bulan dan tahun saat ini
+    DateTime now = DateTime.now();
+    int month = now.month; // Bulan dalam bentuk angka (1-12)
+    int year = now.year;   // Tahun dalam bentuk angka (contoh: 2025)
+    
+    try {
+      final response = await _dio.get(
+        '/mood-details',
+        queryParameters: {'idUser': idUser, 'month': month, 'year':year}, // Menambahkan idUser sebagai query parameter jika diperlukan
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $bearerToken',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        // Mengambil data dari response dan melakukan konversi
+        Map<String, dynamic> data = response.data as Map<String, dynamic>;
+
+        // Mendapatkan data array yang ada di dalam key 'data'
+        List<dynamic> moodData = data['data'];
+
+        // Mengonversi List<dynamic> menjadi Map<DateTime, Map<int, dynamic>>
+        Map<DateTime, Map<String, dynamic>> result = {};
+
+        for (var entry in moodData) {
+          // Mengonversi tanggal dari string menjadi DateTime
+          DateTime date = DateTime.parse(entry['date']);
+
+          // Menyusun data mood dalam Map untuk setiap tanggal
+          result[date] = {
+            'idUser': entry['idUser'],
+            'mood': entry['mood'],
+            'perasaan': List<String>.from(jsonDecode(entry['perasaan'])),
+            'kondisiBayi': List<String>.from(jsonDecode(entry['kondisiBayi'])),
+            'textJurnal': entry['textJurnal'],
+          };
+        }
+
+        return result;
+      } else {
+        throw Exception('Failed to load mood detail');
+      }
+    } catch (e) {
+      throw Exception('Error fetching mood data: $e');
+    }
+  }
 
   // Fungsi untuk mengambil data mood dari API
   Future<Map<DateTime, Map<int, dynamic>>> fetchMoodSummary(String bearerToken, int idUser) async {

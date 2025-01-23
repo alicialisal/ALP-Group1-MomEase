@@ -210,4 +210,49 @@ class MoodJournalingController extends Controller implements HasMiddleware
 
         return response()->json($response, 200);
     }
+
+    public function getMoodDetails(Request $request)
+    {
+        // Validasi parameter
+        $validator = Validator::make($request->all(), [
+            'month' => 'required|integer|between:1,12', // Bulan antara 1-12
+            'year'  => 'required|integer|min:2000|max:' . Carbon::now()->year, // Tahun minimal 2000 sampai tahun ini
+            'idUser'=> 'required|exists:users,idUser'
+        ]);
+    
+        // Jika validasi gagal, kembalikan respons error
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+    
+        // Ambil bulan dan tahun dari parameter
+        $month = $request->input('month');
+        $year = $request->input('year');
+        $idUser = $request->input('idUser');
+    
+        // Query untuk mendapatkan data mood per hari
+        $dailyMoods = moodJournaling::select(
+            DB::raw('DATE(tglInput) as date'), // Ambil tanggal
+            'idUser',                             // Ambil nilai mood
+            'mood',
+            'perasaan',
+            'kondisiBayi',
+            'textJurnal'
+        )
+            ->where('idUser', $idUser) 
+            ->whereMonth('tglInput', $month)
+            ->whereYear('tglInput', $year)
+            // ->groupBy(DB::raw('DATE(tglInput)'), 'mood') // Kelompokkan berdasarkan tanggal dan mood
+            ->orderBy(DB::raw('DATE(tglInput)'))        // Urutkan berdasarkan tanggal
+            ->get();
+
+        // Format respons
+        $response = [
+            'month' => $month,
+            'year' => $year,
+            'data' => $dailyMoods,
+        ];
+
+        return response()->json($response, 200);
+    }
 }
