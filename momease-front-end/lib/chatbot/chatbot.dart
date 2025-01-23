@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:google_generative_ai/google_generative_ai.dart';
 
 void main() {
   runApp(MyApp());
@@ -168,43 +169,41 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       isLoading = true;
     });
 
-    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key= $geminiApiKey');
+    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta2/models/gemini-pro:generateText');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $geminiApiKey',
     };
     final body = jsonEncode({
-      "model": "text-davinci-003", // Or whichever Gemini model you want to use
-      "prompt": message,
-      "max_tokens": 50, // Adjust as needed
+      "prompt": {
+        "text": message,
+      },
     });
 
 
-      try {
-        final response = await http.post(Uri.parse('$url?key=$geminiApiKey'), headers: headers, body: body);
-
+    try {
+      final response = await http.post(url, headers: headers, body: body);
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-
-
-        final geminiMessage = jsonResponse['candidates'][0]['content']['parts'][0]['text']; // Correct path
-
+        final geminiMessage = jsonResponse['candidates'][0]['output']['text'];
 
         setState(() {
           widget.chat['messages'].add({'role': 'assistant', 'content': geminiMessage});
           isLoading = false;
         });
 
-
         return geminiMessage;
+
       } else {
-        // Handle errors
         print('Error from Gemini API: ${response.statusCode} - ${response.body}');
         setState(() {
           isLoading = false;
         });
-        return 'Error: ${response.statusCode}';
+
+        final errorJson = jsonDecode(response.body);
+        final errorMessage = errorJson['error']['message'];
+        return 'Error: $errorMessage';
       }
     } catch (e) {
       print('Error sending message: $e');
