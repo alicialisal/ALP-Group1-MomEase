@@ -112,7 +112,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
       context,
       MaterialPageRoute(
         builder: (context) =>
-            FillMoodPage(selectedDate: date, moodData: _moodData[date]),
+            FillMoodPage(selectedDate: date, moodData: _moodData),
       ),
     );
 
@@ -326,17 +326,6 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
               ),
               calendarBuilders: CalendarBuilders(
                 markerBuilder: (context, day, _) {
-                  // Debug: Cetak semua key dari _moodData dan nilai day
-                  debugPrint("Keys in _moodData: ${_moodData.keys}");
-                  debugPrint("Current day: $day");
-
-                  // if (_moodData.containsKey(day)) {
-                  //   final overallMood = _moodData[day]?['overallMood'];
-                  //   int moodNumber = moodToNumber[overallMood] ?? 0;
-                  //   if (overallMood != null) {
-                  //     final moodImage =
-                  //         'assets/emote/${moodNumber}_selected.png';
-                  // Cek apakah _moodData memiliki key yang sesuai dengan tanggal (hanya tanggal, tanpa waktu)
                   if (_moodData.keys.any((key) => isSameDay(key, day))) {
                     final matchingKey =
                         _moodData.keys.firstWhere((key) => isSameDay(key, day));
@@ -379,7 +368,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
 
 class FillMoodPage extends StatefulWidget {
   final DateTime selectedDate;
-  final Map<int, dynamic>? moodData;
+  final Map<DateTime, Map<int, dynamic>>? moodData;
 
   FillMoodPage({required this.selectedDate, this.moodData});
 
@@ -388,6 +377,7 @@ class FillMoodPage extends StatefulWidget {
 }
 
 class _FillMoodPageState extends State<FillMoodPage> {
+  Map<DateTime, Map<String, dynamic>>? moodDetails;
   List<String> selectedUserMood = [];
   List<String> selectedBabyMood = [];
   String? selectedOverallMood;
@@ -397,6 +387,60 @@ class _FillMoodPageState extends State<FillMoodPage> {
   final JournalingService _apiService = JournalingService();
   String _randomQuestion = "Share about your day..."; // Initial message
   XFile? _image;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMoodDetails();
+  }
+
+  Future<void> _loadMoodDetails() async {
+    // final prefs = await SharedPreferences.getInstance();
+    // final data =
+    //     prefs.getString('moodData') ?? '{}'; // Ambil data yang ada, jika ada
+
+    // setState(() {
+    //   // Decode JSON dan transformasikan menjadi Map<DateTime, Map<String, dynamic>>
+    //   _moodData = (jsonDecode(data) as Map<String, dynamic>)
+    //       .map<DateTime, Map<String, dynamic>>((key, value) {
+    //     // Mengkonversi string tanggal menjadi DateTime dan memastikan value menjadi Map<String, dynamic>
+    //     return MapEntry(DateTime.parse(key), Map<String, dynamic>.from(value));
+    //   });
+    // });
+
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int? idUserActive = prefs.getInt('idUser');
+      String? tokenActive = prefs.getString('token');
+      // Validasi idUserActive
+      if (idUserActive == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('ID User tidak ditemukan. Silakan login kembali.')),
+        );
+        return;
+      }
+
+      if (tokenActive == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Token tidak ditemukan. Silakan login kembali.')),
+        );
+        return;
+      }
+
+      JournalingService journalingService = JournalingService();
+      Map<DateTime, Map<String, dynamic>> moodData = await journalingService.fetchDetailMood(tokenActive, idUserActive, widget.selectedDate);
+      
+      setState(() {
+        moodDetails = moodData;
+      });
+
+      // Simpan data mood ke SharedPreferences jika diperlukan
+      prefs.setString('moodData', jsonEncode(moodDetails));
+
+    } catch (e) {
+      print('Error loading mood data: $e');
+    }
+  }
 
   final List<String> _questions = [
     "Tell us about what made you feel happy today.",
@@ -649,6 +693,29 @@ class _FillMoodPageState extends State<FillMoodPage> {
       "Happy": 4,
       "Excited": 5,
     };
+
+    final Map<int, String> moodToString = {
+      1: "Angry",
+      2: "Sad",
+      3: "Neutral",
+      4: "Happy",
+      5: "Excited",
+    };
+
+    // Null-check untuk moodDetails
+    if (moodDetails != null) {
+      final firstMoodDetail = moodDetails?.values.first;
+  
+      // Null-check untuk `firstMoodDetail` sebelum mengakses propertinya
+      if (firstMoodDetail != null) {
+        selectedOverallMood ??= moodToString[firstMoodDetail['mood']] ?? 'Unknown';
+        selectedUserMood = List<String>.from(firstMoodDetail['perasaan'] ?? []);
+        selectedBabyMood = List<String>.from(firstMoodDetail['kondisiBayi'] ?? []);
+        _dayDescriptionController.text =
+            firstMoodDetail['textJurnal'] as String? ?? '';
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Fill Mood'),
