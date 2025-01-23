@@ -1,10 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:front_end/mood_journaling/mood_journaling.dart';
 import 'package:front_end/notification/notification.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
-import 'dart:convert';
+import 'package:front_end/services/journaling_service.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'detail_mood_journaling.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -19,7 +22,55 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   void initState() {
     super.initState();
-    _loadHistoryData();
+    _loadMoodHistory();
+  }
+
+  Future<void> _loadMoodHistory() async {
+    // final prefs = await SharedPreferences.getInstance();
+    // final data =
+    //     prefs.getString('moodData') ?? '{}'; // Ambil data yang ada, jika ada
+
+    // setState(() {
+    //   // Decode JSON dan transformasikan menjadi Map<DateTime, Map<String, dynamic>>
+    //   _moodData = (jsonDecode(data) as Map<String, dynamic>)
+    //       .map<DateTime, Map<String, dynamic>>((key, value) {
+    //     // Mengkonversi string tanggal menjadi DateTime dan memastikan value menjadi Map<String, dynamic>
+    //     return MapEntry(DateTime.parse(key), Map<String, dynamic>.from(value));
+    //   });
+    // });
+
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int? idUserActive = prefs.getInt('idUser');
+      String? tokenActive = prefs.getString('token');
+      // Validasi idUserActive
+      if (idUserActive == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('ID User tidak ditemukan. Silakan login kembali.')),
+        );
+        return;
+      }
+
+      if (tokenActive == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Token tidak ditemukan. Silakan login kembali.')),
+        );
+        return;
+      }
+
+      JournalingService journalingService = JournalingService();
+      Map<DateTime, Map<String, dynamic>> moodData = await journalingService.fetchMoodDetails(tokenActive, idUserActive);
+      
+      setState(() {
+        _historyData = moodData;
+      });
+
+      // Simpan data mood ke SharedPreferences jika diperlukan
+      prefs.setString('moodData', jsonEncode(_historyData));
+
+    } catch (e) {
+      print('Error loading mood data: $e');
+    }
   }
 
   Future<void> _loadHistoryData() async {
@@ -47,18 +98,18 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  String _getEmoteImage(String overallMood) {
-    switch (overallMood.toLowerCase()) {
-      case 'happy':
-        return 'assets/emote/happy_selected.png';
-      case 'sad':
-        return 'assets/emote/sad_selected.png';
-      case 'neutral':
-        return 'assets/emote/neutral_selected.png';
-      case 'angry':
-        return 'assets/emote/angry_selected.png';
-      case 'excited':
-        return 'assets/emote/excited_selected.png';
+  String _getEmoteImage(int overallMood) {
+    switch (overallMood) {
+      case 4:
+        return 'assets/emote/4_selected.png';
+      case 2:
+        return 'assets/emote/2_selected.png';
+      case 3:
+        return 'assets/emote/3_selected.png';
+      case 1:
+        return 'assets/emote/1_selected.png';
+      case 5:
+        return 'assets/emote/5_selected.png';
       default:
         return 'assets/emote/unknown.png'; // Gambar default jika tidak ditemukan
     }
@@ -228,7 +279,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                           ), // Jarak antara tanggal dan emote
                                           Image.asset(
                                             _getEmoteImage(
-                                              moodDetails['overallMood'],
+                                              moodDetails['mood'],
                                             ),
                                             height: 65,
                                             width: 65,
@@ -247,7 +298,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                           Wrap(
                                             spacing: 8.0,
                                             runSpacing: 8.0,
-                                            children: (moodDetails['userMood']
+                                            children: (moodDetails['perasaan']
                                                     as List)
                                                 .map<Widget>((mood) {
                                               return Container(
@@ -281,7 +332,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                           Wrap(
                                             spacing: 8.0,
                                             runSpacing: 8.0,
-                                            children: (moodDetails['babyMood']
+                                            children: (moodDetails['kondisiBayi']
                                                     as List)
                                                 .map<Widget>((mood) {
                                               return Container(
