@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:front_end/CHHATBOT.dart';
 import 'package:front_end/blog_page/blog.dart';
 import 'package:front_end/chatbot/chatbot.dart';
 import 'package:front_end/kegiatan_relaksasi/search_page.dart';
