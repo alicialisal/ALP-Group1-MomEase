@@ -59,7 +59,7 @@ class _HistoryPageState extends State<HistoryPage> {
       }
 
       JournalingService journalingService = JournalingService();
-      Map<DateTime, Map<String, dynamic>> moodData = await journalingService.fetchMoodDetails(tokenActive, idUserActive);
+      Map<DateTime, Map<String, dynamic>> moodData = await journalingService.fetchMoodHistory(tokenActive, idUserActive);
       
       setState(() {
         _historyData = moodData;
@@ -213,10 +213,10 @@ class _HistoryPageState extends State<HistoryPage> {
                                 date: date,
                                 moodDetails: moodDetails,
                                 selectedEmote: _getEmoteImage(
-                                  moodDetails['overallMood'],
+                                  moodDetails['mood'],
                                 ), // Mengirim emote yang dipilih
                                 selectedMood: moodDetails[
-                                    'overallMood'], // Mengirim status mood
+                                    'mood'], // Mengirim status mood
                               ),
                             ),
                           );

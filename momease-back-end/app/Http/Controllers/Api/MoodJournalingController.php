@@ -93,13 +93,25 @@ class MoodJournalingController extends Controller implements HasMiddleware
         return new MoodJournalingResource(true, 'Data Mood Journaling berhasil ditambahkan!', $moodJournaling);
     }
 
-    public function show($id)
+    public function show($idUser, $date)
     {
-        //find post by ID
-        $moodJournaling = moodJournaling::find($id);
+        // Mengambil data mood journaling berdasarkan tanggal dan urutkan berdasarkan 'tglInput' secara menurun (terbaru)
+        $moodJournaling = moodJournaling::whereDate('tglInput', $date) // Menyaring berdasarkan tanggal
+        ->where('idUser', $idUser)
+        ->orderBy('tglInput', 'desc') // Mengurutkan berdasarkan tglInput, yang terbaru di atas
+        ->first(); // Mengambil hanya 1 data terakhir
 
-        //return single post as a resource
-        return new MoodJournalingResource(true, 'Detail Data Mood Journaling', $moodJournaling);
+        // Memeriksa jika data ditemukan
+        if ($moodJournaling) {
+            // Mengembalikan data mood journaling sebagai resource
+            return new MoodJournalingResource(true, 'Detail Data Mood Journaling', $moodJournaling);
+        } else {
+            // Jika tidak ada data ditemukan untuk tanggal tersebut
+            return response()->json([
+                'success' => false,
+                'message' => 'Data mood journaling tidak ditemukan untuk tanggal ini.'
+            ], 404);
+        }
     }
 
     public function update(Request $request, $id)

@@ -117,7 +117,7 @@ class SelfAssessController extends Controller implements HasMiddleware
         return new SelfAssessmentResource(true, 'Detail Self-Assessment ditemukan', $response);
     }
 
-    public function showPertanyaan()
+    public function showPertanyaan($idSesiAssess)
     {
         // Cari data sesi_assessment
         $sesi = DB::table('sesi_assessment')->where('idSesiAssess', $idSesiAssess)->first();

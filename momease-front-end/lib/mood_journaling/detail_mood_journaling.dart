@@ -1,10 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:front_end/notification/notification.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:io';
 import 'package:intl/intl.dart';
 
-class DetailPage extends StatelessWidget {
+class DetailPage extends StatefulWidget {
   final DateTime date;
   final Map<String, dynamic> moodDetails;
   final String selectedEmote; // Menyimpan emote yang dipilih
@@ -13,9 +14,71 @@ class DetailPage extends StatelessWidget {
   DetailPage({
     required this.date,
     required this.moodDetails,
-    required this.selectedEmote, // Menerima emote dari HistoryPage
-    required this.selectedMood, // Menerima status mood dari HistoryPage
+    required this.selectedEmote,
+    required this.selectedMood,
   });
+
+  @override
+  _DetailPageState createState() => _DetailPageState();
+}
+
+class _DetailPageState extends State<DetailPage> {
+  late Map<String, dynamic> _moodDetails;
+
+  @override
+  void initState() {
+    super.initState();
+    _moodDetails = widget.moodDetails; // Inisialisasi awal
+    _loadMoodData(); // Memuat data saat halaman pertama kali dibuka
+  }
+
+  Future<void> _loadMoodData() async {
+    // final prefs = await SharedPreferences.getInstance();
+    // final data =
+    //     prefs.getString('moodData') ?? '{}'; // Ambil data yang ada, jika ada
+
+    // setState(() {
+    //   // Decode JSON dan transformasikan menjadi Map<DateTime, Map<String, dynamic>>
+    //   _moodData = (jsonDecode(data) as Map<String, dynamic>)
+    //       .map<DateTime, Map<String, dynamic>>((key, value) {
+    //     // Mengkonversi string tanggal menjadi DateTime dan memastikan value menjadi Map<String, dynamic>
+    //     return MapEntry(DateTime.parse(key), Map<String, dynamic>.from(value));
+    //   });
+    // });
+
+    // try {
+    //   SharedPreferences prefs = await SharedPreferences.getInstance();
+    //   int? idUserActive = prefs.getInt('idUser');
+    //   String? tokenActive = prefs.getString('token');
+    //   // Validasi idUserActive
+    //   if (idUserActive == null) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('ID User tidak ditemukan. Silakan login kembali.')),
+    //     );
+    //     return;
+    //   }
+
+    //   if (tokenActive == null) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('Token tidak ditemukan. Silakan login kembali.')),
+    //     );
+    //     return;
+    //   }
+
+    //   JournalingService journalingService = JournalingService();
+      // Map<String, dynamic> moodData = await journalingService.fetchMoodDetails(tokenActive, idUserActive);
+      
+    //   setState(() {
+    //     _moodDetails = moodData;
+    //   });
+
+    //   // Simpan data mood ke SharedPreferences jika diperlukan
+    //   prefs.setString('moodData', jsonEncode(_moodDetails));
+
+    // } catch (e) {
+    //   print('Error loading mood data: $e');
+    // }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +123,7 @@ class DetailPage extends StatelessWidget {
                       ), // Menambahkan border radius
                     ),
                     child: Text(
-                      DateFormat('dd MMM yyyy').format(date), // Format tanggal
+                      DateFormat('dd MMM yyyy').format(widget.date), // Format tanggal
                       style: GoogleFonts.poppins(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -70,16 +133,16 @@ class DetailPage extends StatelessWidget {
                   ),
                   SizedBox(height: 20),
                   // Menampilkan emote
-                  if (selectedEmote.isNotEmpty)
+                  if (widget.selectedEmote.isNotEmpty)
                     Image.asset(
-                      selectedEmote, // Menampilkan emote
+                      widget.selectedEmote, // Menampilkan emote
                       height: 100,
                       width: 100,
                     ),
                   SizedBox(height: 10),
                   // Menampilkan status mood
                   Text(
-                    "Status Mood: $selectedMood", // Menampilkan status mood
+                    "Status Mood: $widget.selectedMood", // Menampilkan status mood
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
@@ -101,7 +164,7 @@ class DetailPage extends StatelessWidget {
             Wrap(
               spacing: 8.0,
               runSpacing: 8.0,
-              children: (moodDetails['userMood'] as List).map<Widget>((mood) {
+              children: (widget.moodDetails['userMood'] as List).map<Widget>((mood) {
                 return Container(
                   decoration: BoxDecoration(
                     border: Border.all(color: Color(0xff74B6F2), width: 1),
@@ -128,7 +191,7 @@ class DetailPage extends StatelessWidget {
             Wrap(
               spacing: 8.0,
               runSpacing: 8.0,
-              children: (moodDetails['babyMood'] as List).map<Widget>((mood) {
+              children: (widget.moodDetails['babyMood'] as List).map<Widget>((mood) {
                 return Container(
                   decoration: BoxDecoration(
                     border: Border.all(color: Color(0xffFFBCD9), width: 1),
@@ -153,7 +216,7 @@ class DetailPage extends StatelessWidget {
             ),
             SizedBox(height: 5),
             Text(
-              moodDetails['description'] ?? "-",
+              widget.moodDetails['description'] ?? "-",
               style: GoogleFonts.poppins(fontSize: 16),
             ),
             SizedBox(height: 20),
@@ -165,7 +228,7 @@ class DetailPage extends StatelessWidget {
                 color: Colors.black, // Warna teks
               ),
             ),
-            if (moodDetails['image'] != null)
+            if (widget.moodDetails['image'] != null)
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
                 child: GestureDetector(
@@ -190,7 +253,7 @@ class DetailPage extends StatelessWidget {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(5),
                                     child: Image.file(
-                                      File(moodDetails['image']),
+                                      File(widget.moodDetails['image']),
                                       fit: BoxFit.contain, // Original size
                                     ),
                                   ),
@@ -207,7 +270,7 @@ class DetailPage extends StatelessWidget {
                       10,
                     ), // Menambahkan border radius
                     child: Image.file(
-                      File(moodDetails['image']),
+                      File(widget.moodDetails['image']),
                       width: 180, // Mengatur lebar gambar
                       height: 180, // Mengatur tinggi gambar
                       fit: BoxFit.cover, // Menjaga rasio gambar tetap konsisten

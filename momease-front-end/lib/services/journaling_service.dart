@@ -18,7 +18,7 @@ class JournalingService {
   // Map<DateTime, Map<String, dynamic>> _moodData = {};
 
   // Fungsi untuk mengambil data mood dari API
-  Future<Map<DateTime, Map<String, dynamic>>> fetchMoodDetails(String bearerToken, int idUser) async {
+  Future<Map<DateTime, Map<String, dynamic>>> fetchMoodHistory(String bearerToken, int idUser) async {
     // Validasi parameter idUser
     if (idUser <= 0) {
       throw Exception('Invalid idUser');
@@ -32,7 +32,7 @@ class JournalingService {
     try {
       final response = await _dio.get(
         '/mood-details',
-        queryParameters: {'idUser': idUser, 'month': month, 'year':year}, // Menambahkan idUser sebagai query parameter jika diperlukan
+        queryParameters: {'idUser': idUser, 'month': month, 'year':year},
         options: Options(
           headers: {
             'Authorization': 'Bearer $bearerToken',
@@ -72,6 +72,68 @@ class JournalingService {
       throw Exception('Error fetching mood data: $e');
     }
   }
+
+  // Fungsi untuk mengambil data mood dari API
+  Future<Map<DateTime, Map<String, dynamic>>> fetchDetailMood(
+      String bearerToken, int idUser, DateTime date) async {
+    // Validasi parameter idUser
+    if (idUser <= 0) {
+      throw Exception('Invalid idUser');
+    }
+  
+    // Mendapatkan bulan dan tahun saat ini
+    DateTime now = DateTime.now();
+    String todayDate =
+        date.toIso8601String().split('T')[0]; // Format: YYYY-MM-DD
+    int month = now.month; // Bulan dalam bentuk angka (1-12)
+    int year = now.year; // Tahun dalam bentuk angka (contoh: 2025)
+  
+    try {
+      final response = await _dio.get(
+        '/journaling/$idUser/$todayDate',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $bearerToken',
+          },
+        ),
+      );
+  
+      if (response.statusCode == 200) {
+        // Mengambil data dari response dan melakukan konversi
+        Map<String, dynamic> data = response.data as Map<String, dynamic>;
+  
+        if (data.containsKey('data')) {
+          var entry = data['data'];
+          print('Entry Data: $entry'); // Debugging: Memeriksa data entry
+  
+          // Mengonversi tanggal dari string menjadi DateTime
+          DateTime date = DateTime.parse(entry['tglInput']);
+          print('Parsed Date: $date'); // Debugging: Memeriksa tanggal yang diparse
+  
+          // Menyusun data mood dalam Map
+          Map<DateTime, Map<String, dynamic>> result = {
+            date: {
+              'idJournaling': entry['idJournaling'],
+              'idUser': entry['idUser'],
+              'mood': entry['mood'],
+              'perasaan': List<String>.from(jsonDecode(entry['perasaan'])),
+              'kondisiBayi': List<String>.from(jsonDecode(entry['kondisiBayi'])),
+              'textJurnal': entry['textJurnal'],
+            }
+          };
+  
+          return result;
+        } else {
+          throw Exception('Response does not contain expected data');
+        }
+      } else {
+        throw Exception('Failed to load mood detail');
+      }
+    } catch (e) {
+      throw Exception('Error fetching mood data: $e');
+    }
+  }
+
 
   // Fungsi untuk mengambil data mood dari API
   Future<Map<DateTime, Map<int, dynamic>>> fetchMoodSummary(String bearerToken, int idUser) async {
