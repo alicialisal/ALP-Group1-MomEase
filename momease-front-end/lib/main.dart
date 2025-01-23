@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:front_end/CHHATBOT.dart';
 import 'package:front_end/blog_page/blog.dart';
 import 'package:front_end/chatbot/chatbot.dart';
 import 'package:front_end/mood_journaling/mood_journaling.dart';

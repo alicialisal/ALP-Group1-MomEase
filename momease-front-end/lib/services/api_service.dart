@@ -200,10 +200,15 @@ class ApiService {
     }
   }
 
-Future<Map<String, dynamic>> updateProfile(Map<String, dynamic> profileData) async {
+  Future<Map<String, dynamic>> updateProfile(Map<String, dynamic> profileData, int idUser, String bearerToken) async {
     try {
       final response = await _dio.post(
-        '$_baseUrl/profile/update',
+        '$_baseUrl/profile/update/$idUser',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $bearerToken',
+          },
+        ),
         data: profileData,
       );
       

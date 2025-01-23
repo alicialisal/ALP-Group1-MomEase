@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:front_end/services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -64,6 +67,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _updateProfile() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? idUserActive = prefs.getInt('idUser');
+    String? tokenActive = prefs.getString('token');
+    // Validasi idUserActive
+    if (idUserActive == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('ID User tidak ditemukan. Silakan login kembali.')),
+      );
+      return;
+    }
+    if (tokenActive == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Token tidak ditemukan. Silakan login kembali.')),
+      );
+      return;
+    }
+
     if (!_validateInputs()) return;
 
     setState(() => _isLoading = true);
@@ -76,7 +96,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         'email': emailController.text,
       };
 
-      final response = await _apiService.updateProfile(profileData);
+      final response = await _apiService.updateProfile(profileData, idUserActive, tokenActive);
 
       if (response['success']) {
         ScaffoldMessenger.of(context).showSnackBar(
