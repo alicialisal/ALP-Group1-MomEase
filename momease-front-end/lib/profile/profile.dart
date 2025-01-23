@@ -62,12 +62,6 @@ class ProfilePage extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                // Gambar berbentuk lingkaran
-                                CircleAvatar(
-                                  radius: 30.0,
-                                  backgroundImage: AssetImage(
-                                      'assets/images/image_profile/michie.png'),
-                                ),
                                 SizedBox(width: 15.0),
                                 // Nama user
                                 Text(
