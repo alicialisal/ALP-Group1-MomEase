@@ -1,27 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
-class ChatMessage {
-  final String idPesan;
-  final String pengirim;
-  final String pesan;
-  final DateTime waktuKirim;
+void main() {
+  runApp(MyApp());
+}
 
-  ChatMessage({
-    required this.idPesan,
-    required this.pengirim,
-    required this.pesan,
-    required this.waktuKirim,
-  });
-
-  factory ChatMessage.fromJson(Map<String, dynamic> json) {
-    return ChatMessage(
-      idPesan: json['idPesan'],
-      pengirim: json['pengirim'],
-      pesan: json['pesan'],
-      waktuKirim: DateTime.parse(json['waktuKirim']),
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: ChatListPage(),
     );
   }
 }
@@ -32,188 +23,265 @@ class ChatListPage extends StatefulWidget {
 }
 
 class _ChatListPageState extends State<ChatListPage> {
-  final TextEditingController _messageController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-  final List<ChatMessage> _messages = [];
-  String? _currentSessionId;
-  bool _isLoading = false;
+  List<Map<String, dynamic>> chats = [];
 
   @override
   void initState() {
     super.initState();
-    _initializeSession();
+    _loadChats();
   }
 
-  Future<void> _initializeSession() async {
+  Future<void> _loadChats() async {
     final prefs = await SharedPreferences.getInstance();
-    String sessionId = prefs.getString('current_session_id') ?? DateTime.now().millisecondsSinceEpoch.toString();
+    final chatsData = prefs.getStringList('chats') ?? [];
     setState(() {
-      _currentSessionId = sessionId;
+      chats = chatsData.map((chatJson) => json.decode(chatJson) as Map<String, dynamic>).toList();
     });
-    await _loadMessages();
   }
 
-  Future<void> _loadMessages() async {
-    // Add endpoint to fetch previous messages if needed
+  Future<void> _saveChats() async {
+    final prefs = await SharedPreferences.getInstance();
+    final chatsJson = chats.map((chat) => json.encode(chat)).toList();
+    await prefs.setStringList('chats', chatsJson);
   }
 
-  Future<void> _sendMessage(String message) async {
-    if (message.trim().isEmpty) return;
 
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final response = await http.post(
-        Uri.parse('your_backend_url/api/chat/send-message'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer your_auth_token', // Add your auth token
-        },
-        body: jsonEncode({
-          'idSesi': _currentSessionId,
-          'pesan': message,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        setState(() {
-          _messages.add(ChatMessage.fromJson(data['user_message']));
-          _messages.add(ChatMessage.fromJson(data['ai_response']));
-        });
-        _messageController.clear();
-        _scrollToBottom();
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send message')),
+  void _createNewChat() async {
+    String? chatName = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        TextEditingController controller = TextEditingController();
+        return AlertDialog(
+          title: Text('Enter Chat Name'),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(hintText: 'Chat name'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(controller.text);
+              },
+              child: Text('Create'),
+            ),
+          ],
         );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
-    } finally {
+      },
+    );
+    if (chatName != null && chatName.isNotEmpty) {
       setState(() {
-        _isLoading = false;
+        chats.add({"title": chatName, "key": chatName, "messages": []});
+        _saveChats();
       });
     }
   }
 
-  void _scrollToBottom() {
-    if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
+  void _deleteChat(int index) async {
+    setState(() {
+      chats.removeAt(index);
+      _saveChats();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat with Momease'),
-        backgroundColor: Colors.pink[100],
+        title: Text('Chatbot'),
+        backgroundColor: Colors.blue,
+      ),
+      body: ListView.builder(
+        itemCount: chats.length,
+        itemBuilder: (context, index) {
+          final lastMessage = chats[index]['messages'].isNotEmpty ? chats[index]['messages'].last['content'] : 'No messages yet';
+          return ListTile(
+            title: Text(chats[index]['title']),
+            subtitle: Text(lastMessage),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatRoomPage(
+                    chat: chats[index],
+                    onMessageSent: (message) {
+                      setState(() {
+                        chats[index]['messages'].add({'role': 'user', 'content': message});
+                        _saveChats();
+                      });
+                    },
+                  ),
+                ),
+              );
+            },
+            trailing: PopupMenuButton<String>(
+              onSelected: (String value) {
+                if (value == 'delete') {
+                  _deleteChat(index);
+                }
+              },
+              itemBuilder: (BuildContext context) {
+                return [
+                  PopupMenuItem<String>(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete, color: Colors.red),
+                        SizedBox(width: 8),
+                        Text('Delete'),
+                      ],
+                    ),
+                  ),
+                ];
+              },
+            ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _createNewChat,
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+
+class ChatRoomPage extends StatefulWidget {
+  final Map<String, dynamic> chat;
+  final Function(String) onMessageSent;
+
+  ChatRoomPage({required this.chat, required this.onMessageSent});
+
+  @override
+  _ChatRoomPageState createState() => _ChatRoomPageState();
+}
+
+
+class _ChatRoomPageState extends State<ChatRoomPage> {
+  TextEditingController messageController = TextEditingController();
+  bool isLoading = false;
+  final String geminiApiKey = 'AIzaSyAhXwJ6NLgxqFJxXqXvZVGK2VzmS_lozP0';
+
+
+  Future<String> _sendMessageToGemini(String message) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key= $geminiApiKey');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $geminiApiKey',
+    };
+    final body = jsonEncode({
+      "model": "text-davinci-003", // Or whichever Gemini model you want to use
+      "prompt": message,
+      "max_tokens": 50, // Adjust as needed
+    });
+
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        final geminiMessage = jsonResponse['choices'][0]['text'];
+
+        setState(() {
+          widget.chat['messages'].add({'role': 'assistant', 'content': geminiMessage});
+          isLoading = false;
+        });
+
+
+        return geminiMessage;
+      } else {
+        print('Error from Gemini API: ${response.statusCode} - ${response.body}');
+        setState(() {
+          isLoading = false;
+        });
+        return 'Error communicating with Gemini AI. Please try again.';
+
+      }
+    } catch (e) {
+      print('Error sending message to Gemini: $e');
+      setState(() {
+        isLoading = false;
+      });
+      return 'Error communicating with Gemini AI. Please check your network connection.';
+    }
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.chat['title']),
+        backgroundColor: Colors.blue,
       ),
       body: Column(
         children: [
-          Expanded(
+           Expanded(
             child: ListView.builder(
-              controller: _scrollController,
-              padding: EdgeInsets.all(16),
-              itemCount: _messages.length,
+              reverse: false,
+              padding: EdgeInsets.all(16.0),
+              itemCount: widget.chat['messages'].length,
               itemBuilder: (context, index) {
-                final message = _messages[index];
-                final isUser = message.pengirim != 'chatBot';
-
-                return Align(
-                  alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                final message = widget.chat['messages'][index];
+                final isUserMessage = message['role'] == 'user';
+                 return Align(
+                  alignment: isUserMessage ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
-                    margin: EdgeInsets.only(
-                      bottom: 8,
-                      left: isUser ? 64 : 0,
-                      right: isUser ? 0 : 64,
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    margin: EdgeInsets.only(bottom: 8.0),
+                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                     decoration: BoxDecoration(
-                      color: isUser ? Colors.pink[100] : Colors.grey[200],
-                      borderRadius: BorderRadius.circular(20),
+                      color: isUserMessage ? Colors.green : Colors.grey[300],
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          message.pesan,
-                          style: TextStyle(
-                            color: isUser ? Colors.white : Colors.black87,
-                            fontSize: 16,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          _formatTime(message.waktuKirim),
-                          style: TextStyle(
-                            color: isUser ? Colors.white70 : Colors.black54,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
+                    child: Text(
+                      message['content'],
+                      style: TextStyle(color: isUserMessage ? Colors.white : Colors.black),
                     ),
                   ),
                 );
               },
             ),
           ),
-          if (_isLoading)
+          if (isLoading)
             Padding(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8.0),
               child: CircularProgressIndicator(),
             ),
-          Container(
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  offset: Offset(0, -2),
-                  blurRadius: 4,
-                ),
-              ],
-            ),
+
+          Divider(height: 1, color: Colors.grey),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _messageController,
+                    controller: messageController,
                     decoration: InputDecoration(
                       hintText: 'Type your message...',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey[100],
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
-                    maxLines: null,
-                    textCapitalization: TextCapitalization.sentences,
                   ),
                 ),
                 SizedBox(width: 8),
-                FloatingActionButton(
-                  onPressed: _isLoading
-                      ? null
-                      : () => _sendMessage(_messageController.text),
-                  child: Icon(_isLoading ? Icons.hourglass_empty : Icons.send),
-                  backgroundColor: Colors.pink[100],
-                  mini: true,
+                IconButton(
+                  icon: Icon(Icons.send, color: Colors.blue),
+                  onPressed: () async {
+                    if (messageController.text.isNotEmpty) {
+                       widget.onMessageSent(messageController.text);
+                      await _sendMessageToGemini(messageController.text);
+
+                      messageController.clear();
+                    }
+                  },
                 ),
               ],
             ),
@@ -221,16 +289,5 @@ class _ChatListPageState extends State<ChatListPage> {
         ],
       ),
     );
-  }
-
-  String _formatTime(DateTime time) {
-    return '${time.hour}:${time.minute.toString().padLeft(2, '0')}';
-  }
-
-  @override
-  void dispose() {
-    _messageController.dispose();
-    _scrollController.dispose();
-    super.dispose();
   }
 }
