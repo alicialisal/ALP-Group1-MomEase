@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:google_generative_ai/google_generative_ai.dart';
 
 void main() {
   runApp(MyApp());
@@ -46,7 +45,6 @@ class _ChatListPageState extends State<ChatListPage> {
     await prefs.setStringList('chats', chatsJson);
   }
 
-
   void _createNewChat() async {
     String? chatName = await showDialog<String>(
       context: context,
@@ -88,13 +86,15 @@ class _ChatListPageState extends State<ChatListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chatbot'),
+        title: Text('Momease Chatbot'),
         backgroundColor: Colors.blue,
       ),
       body: ListView.builder(
         itemCount: chats.length,
         itemBuilder: (context, index) {
-          final lastMessage = chats[index]['messages'].isNotEmpty ? chats[index]['messages'].last['content'] : 'No messages yet';
+          final lastMessage = chats[index]['messages'].isNotEmpty 
+              ? chats[index]['messages'].last['content'] 
+              : 'No messages yet';
           return ListTile(
             title: Text(chats[index]['title']),
             subtitle: Text(lastMessage),
@@ -146,7 +146,6 @@ class _ChatListPageState extends State<ChatListPage> {
   }
 }
 
-
 class ChatRoomPage extends StatefulWidget {
   final Map<String, dynamic> chat;
   final Function(String) onMessageSent;
@@ -157,64 +156,73 @@ class ChatRoomPage extends StatefulWidget {
   _ChatRoomPageState createState() => _ChatRoomPageState();
 }
 
-
 class _ChatRoomPageState extends State<ChatRoomPage> {
   TextEditingController messageController = TextEditingController();
   bool isLoading = false;
-  final String geminiApiKey = 'AIzaSyAhXwJ6NLgxqFJxXqXvZVGK2VzmS_lozP0';
+  
+  // Replace with your actual Gemini API key
+  static const String GEMINI_API_KEY = 'AIzaSyBQAyS7IflL4VzVcwY44xXYlXGTWYvlExY';
+  
+  late final GenerativeModel _model;
+  late final ChatSession _chatSession;
 
+  @override
+  void initState() {
+    super.initState();
+    // Initialize Gemini model with custom system instruction
+    _model = GenerativeModel(
+      model: 'gemini-1.5-flash',
+      apiKey: GEMINI_API_KEY,
+      generationConfig: GenerationConfig(
+        temperature: 0.7,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 8192,
+        responseMimeType: 'text/plain',
+      ),
+      systemInstruction: Content.system(
+        'Kamu adalah seorang asisten yang Ramah, sabar, dan penuh perhatian. '
+        'Namamu adalah Momease, kamu Selalu memberikan dorongan positif dan validasi perasaan ibu. '
+        'Kamu suka memberikan dukungan emotional untuk menjauhkan orang-orang dari pikiran negative. '
+        'Kamu juga sering Menyediakan tips praktis dalam mengelola kebutuhan bayi dan keseharian. '
+        'Berkomunikasi dengan kalimat sederhana dan bersahabat. '
+        'Memberikan jawaban singkat agar sang ibu tidak perlu membaca panjang-panjang. '
+        'Menghindari nada menghakimi atau memerintah dan menggunakan pendekatan kolaboratif.'
+      ),
+    );
 
-  Future<String> _sendMessageToGemini(String message) async {
+    // Initialize chat session
+    _chatSession = _model.startChat();
+  }
+
+  Future<void> _sendMessageToGemini(String message) async {
     setState(() {
       isLoading = true;
     });
 
-    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta2/models/gemini-pro:generateText');
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $geminiApiKey',
-    };
-    final body = jsonEncode({
-      "prompt": {
-        "text": message,
-      },
-    });
-
-
     try {
-      final response = await http.post(url, headers: headers, body: body);
+      final response = await _chatSession.sendMessage(
+        Content.text(message),
+      );
 
-      if (response.statusCode == 200) {
-        final jsonResponse = jsonDecode(response.body);
-        final geminiMessage = jsonResponse['candidates'][0]['output']['text'];
-
-        setState(() {
-          widget.chat['messages'].add({'role': 'assistant', 'content': geminiMessage});
-          isLoading = false;
-        });
-
-        return geminiMessage;
-
-      } else {
-        print('Error from Gemini API: ${response.statusCode} - ${response.body}');
-        setState(() {
-          isLoading = false;
-        });
-
-        final errorJson = jsonDecode(response.body);
-        final errorMessage = errorJson['error']['message'];
-        return 'Error: $errorMessage';
-      }
-    } catch (e) {
-      print('Error sending message: $e');
       setState(() {
+        widget.chat['messages'].add({
+          'role': 'assistant', 
+          'content': response.text ?? 'No response'
+        });
         isLoading = false;
       });
-      return 'Error: $e';
+    } catch (e) {
+      print('Error sending message to Gemini: $e');
+      setState(() {
+        widget.chat['messages'].add({
+          'role': 'assistant', 
+          'content': 'Error: $e'
+        });
+        isLoading = false;
+      });
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -225,7 +233,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       ),
       body: Column(
         children: [
-           Expanded(
+          Expanded(
             child: ListView.builder(
               reverse: false,
               padding: EdgeInsets.all(16.0),
@@ -233,7 +241,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
               itemBuilder: (context, index) {
                 final message = widget.chat['messages'][index];
                 final isUserMessage = message['role'] == 'user';
-                 return Align(
+                return Align(
                   alignment: isUserMessage ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
                     margin: EdgeInsets.only(bottom: 8.0),
@@ -278,9 +286,8 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                   icon: Icon(Icons.send, color: Colors.blue),
                   onPressed: () async {
                     if (messageController.text.isNotEmpty) {
-                       widget.onMessageSent(messageController.text);
+                      widget.onMessageSent(messageController.text);
                       await _sendMessageToGemini(messageController.text);
-
                       messageController.clear();
                     }
                   },
