@@ -36,6 +36,12 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
     _loadMoodData();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadMoodData();
+  }
+
   Future<void> _loadMoodData() async {
     // final prefs = await SharedPreferences.getInstance();
     // final data =
@@ -161,7 +167,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                 final today = DateTime.now();
 
                 if (!_moodData.containsKey(selectedDay)) {
-                  if (isSameDay(selectedDay, today)) {
+                  if (selectedDay.isBefore(today) || isSameDay(selectedDay, today)) {
                     setState(() {
                       _selectedDay = selectedDay;
                       _focusedDay = focusedDay;
@@ -317,12 +323,25 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
               ),
               calendarBuilders: CalendarBuilders(
                 markerBuilder: (context, day, _) {
-                  if (_moodData.containsKey(day)) {
-                    final overallMood = _moodData[day]?['overallMood'];
-                    int moodNumber = moodToNumber[overallMood] ?? 0;
-                    if (overallMood != null) {
-                      final moodImage =
-                          'assets/emote/${moodNumber}_selected.png';
+                  // Debug: Cetak semua key dari _moodData dan nilai day
+                  debugPrint("Keys in _moodData: ${_moodData.keys}");
+                  debugPrint("Current day: $day");
+
+                  // if (_moodData.containsKey(day)) {
+                  //   final overallMood = _moodData[day]?['overallMood'];
+                  //   int moodNumber = moodToNumber[overallMood] ?? 0;
+                  //   if (overallMood != null) {
+                  //     final moodImage =
+                  //         'assets/emote/${moodNumber}_selected.png';
+                  // Cek apakah _moodData memiliki key yang sesuai dengan tanggal (hanya tanggal, tanpa waktu)
+                  if (_moodData.keys.any((key) => isSameDay(key, day))) {
+                    final matchingKey = _moodData.keys.firstWhere((key) => isSameDay(key, day));
+                    final moodValue = _moodData[matchingKey]?.values.first;
+                    debugPrint("Mood found for $day: $moodValue");
+
+                    if (moodValue != null) {
+                      int moodNumber = moodValue; // Pastikan nilai mood adalah angka
+                      final moodImage = 'assets/emote/${moodNumber}_selected.png';
                       return Stack(
                         alignment: Alignment.center,
                         children: [
@@ -575,7 +594,9 @@ class _FillMoodPageState extends State<FillMoodPage> {
       'mood': mood,
       'perasaan': selectedUserMood,
       'kondisiBayi': selectedBabyMood,
-      'textJurnal': _dayDescriptionController.text,
+      'textJurnal': _dayDescriptionController.text.isNotEmpty
+        ? _dayDescriptionController.text
+        : 'No journal entry provided',
       // 'imagePath': _image?.path,
       'tglInput': widget.selectedDate.toLocal().toString(),
     };
