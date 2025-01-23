@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post("logout",[AuthController::class,"logout"]);
     //journaling
     Route::apiResource('/journaling', App\Http\Controllers\Api\MoodJournalingController::class);
+    Route::get('/journaling/{id}/{date}', [App\Http\Controllers\Api\MoodJournalingController::class, 'show']);
     Route::get('/mood-summary', [App\Http\Controllers\Api\MoodJournalingController::class, 'getMoodSummary']);
     Route::get('/mood-details', [App\Http\Controllers\Api\MoodJournalingController::class, 'getMoodDetails']);
 
