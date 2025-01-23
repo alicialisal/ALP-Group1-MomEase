@@ -2,11 +2,13 @@ class Blog {
   final String title;
   final String imagePath;
   final String content;
+  final List<String> tips; // New field for additional content
 
   Blog({
     required this.title,
     required this.imagePath,
     required this.content,
+    this.tips = const [], // Initialize with an empty list
   });
 }
 

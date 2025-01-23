@@ -100,7 +100,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 padding: const EdgeInsets.only(
                   top: 30.0,
                 ), // Menambahkan jarak atas
-                child: Image.asset('assets/logo.png', height: 76),
+                child: Image.asset('assets/images/logo.png', height: 76),
               ),
               SizedBox(height: 45),
 

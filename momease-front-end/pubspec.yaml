@@ -47,7 +47,6 @@ dependencies:
   shared_preferences: ^2.3.5
   flutter_secure_storage: ^9.2.4
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -74,6 +73,7 @@ flutter:
   assets:
     - assets/
     - assets/emote/
+    - assets/images/
     
 
   # An image asset can refer to one or more resolution-specific "variants", see

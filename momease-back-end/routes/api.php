@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //journaling
     Route::apiResource('/journaling', App\Http\Controllers\Api\MoodJournalingController::class);
     Route::get('/mood-summary', [App\Http\Controllers\Api\MoodJournalingController::class, 'getMoodSummary']);
+    Route::get('/mood-details', [App\Http\Controllers\Api\MoodJournalingController::class, 'getMoodDetails']);
 
     //photos
     Route::apiResource('/journaling/photos', App\Http\Controllers\Api\PhotoGalleryController::class);

@@ -251,7 +251,7 @@ class ResultPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ChatBotPage()),
+                              builder: (context) => ChatListPage()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -269,7 +269,7 @@ class ResultPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset(
-                            'assets/images/chatbot.png',
+                            'assets/images/chatbot2.png',
                             height: 80,
                             width: 80,
                           ),

@@ -8,15 +8,33 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
+    private function generateIdUser()
+    {
+        // Ambil jurnal terakhir untuk user ini
+        $lastID = DB::table('users')
+            ->latest('idUser') // Mengurutkan berdasarkan ID Journaling
+            ->first();
+
+        // Tentukan ID baru
+        $newId = 1; // Default ID jika tidak ada jurnal sebelumnya
+        if ($lastID) {
+            $lastId = (int) $lastID->idUser; // Ambil ID terakhir sebagai angka
+            $newId = $lastId + 1; // Tambahkan 1 ke ID terakhir
+        }
+
+        return $newId; // Kembalikan ID baru
+    }
+
     // Register Function
     public function register(Request $request)
     {
         // Validasi input
         $validator = Validator::make($request->all(), [
-            'idUser' => 'required|string|unique:users,idUser|max:12', // Sesuai format idUser
+            // 'idUser' => 'required|string|unique:users,idUser|max:12', // Sesuai format idUser
             'namaDpn' => 'required|string|max:255',
             'namaBlkg' => 'nullable|string|max:255',
             'passUsr' => 'required|string|min:8|confirmed',
@@ -31,7 +49,7 @@ class AuthController extends Controller
 
         // Membuat pengguna baru
         $user = User::create([
-            'idUser' => $request->idUser,
+            'idUser' => $this->generateIDUser(),
             'namaDpn' => $request->namaDpn,
             'namaBlkg' => $request->namaBlkg,
             'passUsr' => Hash::make($request->passUsr), // Hashing password
