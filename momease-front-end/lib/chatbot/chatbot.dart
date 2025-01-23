@@ -180,13 +180,16 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     });
 
 
-    try {
-      final response = await http.post(url, headers: headers, body: body);
+      try {
+        final response = await http.post(Uri.parse('$url?key=$geminiApiKey'), headers: headers, body: body);
 
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        final geminiMessage = jsonResponse['choices'][0]['text'];
+
+
+        final geminiMessage = jsonResponse['candidates'][0]['content']['parts'][0]['text']; // Correct path
+
 
         setState(() {
           widget.chat['messages'].add({'role': 'assistant', 'content': geminiMessage});
@@ -196,19 +199,19 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
         return geminiMessage;
       } else {
+        // Handle errors
         print('Error from Gemini API: ${response.statusCode} - ${response.body}');
         setState(() {
           isLoading = false;
         });
-        return 'Error communicating with Gemini AI. Please try again.';
-
+        return 'Error: ${response.statusCode}';
       }
     } catch (e) {
-      print('Error sending message to Gemini: $e');
+      print('Error sending message: $e');
       setState(() {
         isLoading = false;
       });
-      return 'Error communicating with Gemini AI. Please check your network connection.';
+      return 'Error: $e';
     }
   }
 
